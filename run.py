@@ -10,7 +10,9 @@ tEnd = 60.0  # (s)
 chanList = [0]
 chanListType = 'indices' # chanList interpreted as indices of saved channels
 unit = 'uV'
-kwargs_sleep = {}
+kwargs_sleep = {
+    'downsample': downSample
+}
 
 sleepscore.load_and_score(
     binPath, 
