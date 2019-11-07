@@ -85,7 +85,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     nSavedChans = int(meta['nSavedChans'])
     if chanList is None or chanList == 'all':
         # Load all channels
-        chanList = range(0, nSavedChans+1)
+        chanList = range(0, nSavedChans)
         chanListType = 'indices'
     assert chanListType in ['indices', 'labels']
     if chanListType == 'indices':

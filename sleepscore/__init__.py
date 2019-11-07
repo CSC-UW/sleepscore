@@ -1,9 +1,6 @@
 """Load and sleepscore using visbrain.Sleep datasets in multiple formats."""
 
 from visbrain.gui import Sleep
-from pathlib import Path
-from tkinter import Tk
-from tkinter import filedialog
 
 from .load import loader_switch
 

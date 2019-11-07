@@ -2,11 +2,13 @@ import sleepscore
 
 binPath = ""
 datatype = 'SGLX'
-downSample = 100.0
-tStart = None
-tEnd = None
-chanList = None
-chanListType = 'indices'
+downSample = 100.0 # (Hz)
+tStart = None # 0 (s)
+# tEnd = None
+tEnd = 60.0  # (s)
+# chanList = None  # All saved
+chanList = [0]
+chanListType = 'indices' # chanList interpreted as indices of saved channels
 unit = 'uV'
 kwargs_sleep = {}
 
@@ -16,7 +18,7 @@ sleepscore.load_and_score(
     downSample=downSample,
     tStart=tStart,
     tEnd=tEnd,
-    chanList=None,
+    chanList=chanList,
     chanListType=chanListType,
     unit=unit,
     kwargs_sleep=kwargs_sleep,
