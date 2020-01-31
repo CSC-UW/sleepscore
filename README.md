@@ -34,7 +34,8 @@ This repository allows one to perform sleepscoring of neural recording using the
 # From the `visbrain` directory you just downloaded
 pip install -e .
 ```
-2.  (optional) __Install `sleepscore`___
+2.  __Install `sleepscore`___
+
 ```
 # From the `sleepscore` directory you just downloaded
 pip install -e .
@@ -43,7 +44,10 @@ pip install -e .
 
 ### Usage
 
-1.  Manually set the values you want for the parameters of interest in `run.py`, The meaning of each argument is described in the `sleepscore.load_and_score` function:
+1.  Copy the default configuration file (`sleepscore_config_df`)
+
+2.  Manually set the parameters for the copied config file. The meaning of each
+parameter is described in the `sleepscore.load_and_score` function:
 
 
       ```
@@ -65,10 +69,20 @@ pip install -e .
               interpreted as original indices of channels (can be different since)
               not all channels are saved on file during a recording. (default
               'indices')
+          chanLabelsMap (dict | None): Mapping used to redefine arbitrary labels
+              for each of the channels in chanList. If there is no entry in
+              chanLabelsMap for one of the channels, or if chanLabelsMap is None,
+              the displayed channel label is the original index/label as obtained
+              from the recording metadata. (default None)
           unit (str): 'uV' or 'mV'. Unit the data is converted into
           kwargs_sleep (dict): Dictionary to pass to the `Sleep` instance during
               init. (default {})
       ```
 
 
-1.  Run `python3 run.py`
+1.  Run the package using the following command:
+  
+`python sleepscore <path_to_config_file>`
+
+
+Alternatively, `python run.py` will run the default config file.

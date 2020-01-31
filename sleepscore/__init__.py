@@ -37,6 +37,7 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
         kwargs_sleep (dict): Dictionary to pass to the `Sleep` instance during
             init. (default {})
     """
+
     # Preload and downsample specific parts of the data
     data, sf, chanOrigLabels, unit = loader_switch(
         binPath,
