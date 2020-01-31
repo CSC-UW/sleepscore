@@ -4,14 +4,15 @@ from visbrain.gui import Sleep
 
 from .load import loader_switch
 
+
 def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
                    tEnd=None, chanList=None, chanListType='indices',
                    chanLabelsMap=None, unit='uV', kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
-    
+
     Args:
         binPath (str | pathlib.Path): Path to bin of recording
-    
+
     Kwargs:
         datatype (str): 'SGLX' or 'OpenEphys' (default 'SGLX')
         downSample (int | float | None): Frequency in Hz at which the data is
@@ -59,7 +60,7 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
     print_used_channels(chanList, chanOrigLabels, chanLabels)
 
     Sleep(
-        data=data, 
+        data=data,
         channels=chanLabels,
         sf=sf,
         **kwargs_sleep
