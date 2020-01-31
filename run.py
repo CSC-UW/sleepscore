@@ -12,7 +12,7 @@ chanListType = 'indices'  # chanList interpreted as indices of saved channels
 chanLabelsMap = None  # Map channel relabelling (keys are values in `chanList`)
 unit = 'uV'
 kwargs_sleep = {
-    'downsample': downSample
+    'downsample': None,
 }
 
 
