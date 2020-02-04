@@ -51,6 +51,8 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
     )
 
     # Relabel channels and verbose which channels are used
+    if chanList is None or chanList == 'all':
+        chanList = range(len(chanOrigLabels))
     chanLabels = [
         (
             chanLabelsMap[c] if chanLabelsMap is not None and c in chanLabelsMap
