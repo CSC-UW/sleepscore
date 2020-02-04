@@ -80,9 +80,27 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     lastSamp = int(sRate*tEnd)
     print(f"Will load data from tStart={tStart}s to tEnd={tEnd}s")
 
-    # Indices of loaded channels in recording, and labels (= original channel
-    # IDs)
+    def parse_snsChanMap(meta):
+        """Parse channel labels / channel id info in meta['snsChanMap'].
+
+        It is ridiculous that we have to do this ourselves.
+        meta['snsChanMap'] is formatted as follows::
+            (384,384,1)(AP0;0:0)(AP1;1:1)(...)...
+        """
+        mapstring = meta['snsChanMap']
+        maptuples = mapstring.strip(')(').split(')(')[1:]
+        snsChanMap_parsed = [
+            chaninfo.split(sep=':')
+            for chaninfo in maptuples
+        ]  # List of tuples: [(<chan_name>, <chan_orig_index>),...]
+        assert all(
+            [len(tup) == 2 for tup in snsChanMap_parsed]
+        )  # Fails if there's ':' in the channel labels
+        return snsChanMap_parsed
+        
+    # Indices of loaded channels in recording, and original labels
     nSavedChans = int(meta['nSavedChans'])
+    snsChanMap = parse_snsChanMap(meta)
     if chanList is None or chanList == 'all':
         # Load all channels
         chanList = range(0, nSavedChans)
@@ -91,7 +109,13 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     if chanListType == 'indices':
         # Interpret the list of channels as a list of indices in saved recording
         chanIdxList = [int(c) for c in chanList]
-        chanLblList = [str(c) for c in SGLX.OriginalChans(meta)[chanIdxList]]
+        # Get the label of each channel
+        chanOrigIdxList = [
+            str(c) for c in SGLX.OriginalChans(meta)[chanIdxList]
+        ]  # Original channel Ids (amongst all channels,not only the ones saved)
+        #
+        labelmap = dict([(orig_i, label) for label, orig_i in snsChanMap])
+        chanLblList = [labelmap[orig_i] for orig_i in chanOrigIdxList]
     elif chanListType == 'labels':
         # Interpret the list of channels as a list of labels (indices on the
         # probe)o
