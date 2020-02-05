@@ -34,5 +34,6 @@ EMG_config:
 
 # Arguments passed to the `Sleep` GUI
 kwargs_sleep: {
-  downsample: null,
+  downsample: null,  # Further downsample
+  preload: False,  # Preload dataset in memory? Useful for large datasets ?
 }
