@@ -192,7 +192,7 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
         print(f"Computing EMG from LFP:")
         print("Loading LFP for EMG computing")
         # Load LFP for channels of interest
-        lfp, sf, _, _ = loader_switch(
+        lfp, sf, chanLabels, _ = loader_switch(
             binPath,
             datatype=datatype,
             chanList=EMG_config['LFP_chanList'],
@@ -201,6 +201,8 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
             tStart=None,
             tEnd=None,
         )
+        print(f"Using the following channels for EMG derivation (labels): "
+              f"{' - '.join(chanLabels)}")
         print("Computing EMG from LFP")
         EMG_data = EMGfromLFP.compute_EMG(
             lfp, sf,
@@ -213,6 +215,7 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
         EMG_metadata['datatype'] = datatype
         EMG_metadata['EMGdatapath'] = str(EMGdatapath)
         EMG_metadata['EMGmetapath'] = str(EMGmetapath)
+        EMG_metadata['LFP_chanLabels'] = chanLabels
         # EMG_metadata['gitcommit'] = subprocess.check_output(
         #     ["git", "describe"]
         # ).strip()
