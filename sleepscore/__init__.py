@@ -6,15 +6,41 @@ from pathlib import Path
 
 import numpy as np
 
+import yaml
 from visbrain.gui import Sleep
 
-from .tools import EMGfromLFP
 from .load import loader_switch, utils
+from .tools import EMGfromLFP
 
 EMGCONFIGKEYS = [
     'LFP_chanList', 'LFP_downsample', 'LFP_chanListType', 'bandpass',
     'bandstop', 'sf', 'window_size'
 ]
+
+
+def run(config_path):
+
+    with open(config_path, 'r') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+
+    print(f"Sleepscore config: \n Path={config_path}, \n Config={config}, \n")
+
+    load_and_score(
+        config['binPath'],
+        datatype=config['datatype'],
+        downSample=config['downSample'],
+        tStart=config['tStart'],
+        tEnd=config['tEnd'],
+        chanList=config['chanList'],
+        chanListType=config['chanListType'],
+        chanLabelsMap=config['chanLabelsMap'],
+        add_EMG=config['add_EMG'],
+        save_EMG=config['save_EMG'],
+        recompute_EMG=config['recompute_EMG'],
+        EMG_config=config['EMG_config'],
+        unit=config['unit'],
+        kwargs_sleep=config['kwargs_sleep'],
+    )
 
 
 def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
