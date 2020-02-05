@@ -4,6 +4,7 @@ This repository allows one to perform sleepscoring of neural recording using the
 `Sleep` GUI from Visbrain ( <http://visbrain.org> ) using the following steps:
 
 -   load specific aspects of a dataset saved in multiple formats
+-   (Optional) Compute or load a derived-EMG using the method from <https://github.com/buzsakilab/buzcode/blob/master/detectors/bz_EMGFromLFP.m>
 -   launch the Sleep GUI, which can be used to generate a hypnogram
 -   postprocess the hypnogram
 
@@ -74,6 +75,11 @@ parameter is described in the `sleepscore.load_and_score` function:
               chanLabelsMap for one of the channels, or if chanLabelsMap is None,
               the displayed channel label is the original index/label as obtained
               from the recording metadata. (default None)
+          add_EMG (bool): Do we gather and add to the data the lfp-derived EMG
+              (default False)
+          save_EMG (bool): Do we save newly computed EMG (default True)
+          recompute_EMG (bool): Do we force recomputing of EMG.
+          EMG_config (dict): TODO
           unit (str): 'uV' or 'mV'. Unit the data is converted into
           kwargs_sleep (dict): Dictionary to pass to the `Sleep` instance during
               init. (default {})
