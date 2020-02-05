@@ -86,9 +86,19 @@ parameter is described in the `sleepscore.load_and_score` function:
       ```
 
 
-1.  Run the package using the following command:
-  
-`python sleepscore <path_to_config_file>`
+1.  Run the package using either of the following:
 
+
+- From the command line (make sure you're in your virtualenvironment)
+  
+`python -m sleepscore <path_to_config_file>`
+
+- From python:
+
+```python
+import sleepscore
+
+sleepscore.run(<path_to_config_file>)
+```
 
 Alternatively, `python run.py` will run the default config file.
