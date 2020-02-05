@@ -19,6 +19,19 @@ chanLabelsMap: null  # Map channel relabelling (keys are values in `chanList`)
 # Unit of returned data
 unit: 'uV'  # 'uV' or 'mV'
 
+# Derived EMG
+add_EMG: False  # Ignore all EMG-related stuff or not
+save_EMG: True  # Save EMG if we (re)compute it
+recompute_EMG: False  # Force recomputing of EMG
+EMG_config:
+  sf: null  # If null, we use the `downSample` parameter
+  window_size: 25.0  # Window size in ms for xcorr computing
+  bandpass: [300, 600]
+  bandstop: [275, 625]
+  LFP_downsample: null  # sf of LFP used when computing xcorr. 
+  LFP_chanList: []  # eg: [0, -2] Which channels are used for EMG computing
+  LFP_chanListType: 'indices'  # How are values in `chanList` interpreted?
+
 # Arguments passed to the `Sleep` GUI
 kwargs_sleep: {
   downsample: null,

@@ -3,6 +3,7 @@ from . import readSGLX as SGLX
 from pathlib import Path
 from . import utils
 
+
 def loader_switch(binPath, *args, datatype='SGLX', **kwargs):
     """Pipe to correct function for array loading.
     

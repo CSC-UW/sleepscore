@@ -1,5 +1,6 @@
 """Utility functions for data loading and transformation."""
 
+import yaml
 import numpy as np
 
 def get_dsf(downsample, sf):
@@ -18,3 +19,13 @@ def get_dsf(downsample, sf):
         return dsf, downsample
     else:
         return 1, downsample
+
+
+def load_yaml(path):
+    with open(path, 'r') as f:
+        return yaml.load(f)
+
+
+def save_yaml(path, data):
+    with open(path, 'w') as f:
+        yaml.dump(data, f, default_flow_style=False)

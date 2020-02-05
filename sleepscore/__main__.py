@@ -33,6 +33,10 @@ if __name__ == '__main__':
         chanList=config['chanList'],
         chanListType=config['chanListType'],
         chanLabelsMap=config['chanLabelsMap'],
+        add_EMG=config['add_EMG'],
+        save_EMG=config['save_EMG'],
+        recompute_EMG=config['recompute_EMG'],
+        EMG_config=config['EMG_config'],
         unit=config['unit'],
         kwargs_sleep=config['kwargs_sleep'],
     )
