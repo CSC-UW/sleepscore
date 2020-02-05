@@ -63,7 +63,7 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
         print("\nGathering EMG")
         print(f"EMG_config={EMG_config}")
         # Make sure the derived EMG is at the same sampling frequency as the
-        # data: 
+        # data:
         if downSample is None:
             print("`downSample` is None but we load an EMG: set `downSample` to"
                   f"the EMG sf: {EMG_config['sf']}")
@@ -145,7 +145,7 @@ def print_used_channels(chanList, chanOrigLabels, chanLabels):
 def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
             recompute_EMG=False):
     """Load or compute the lfp-derived EMG.
-    
+
     Args:
         binPath: Path to bin of recording of interest. The EMG data and metadata
             are is saved or loaded from the same directory as the raw recording
@@ -158,7 +158,9 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
     # Get paths
     binPath = Path(binPath)
     EMGdatapath = Path(binPath.parent / (binPath.stem + ".derivedEMGdata.npy"))
-    EMGmetapath = Path(binPath.parent / (binPath.stem + ".derivedEMGmetadata.yml"))
+    EMGmetapath = Path(
+        binPath.parent / (binPath.stem + ".derivedEMGmetadata.yml")
+    )
 
     # Do we compute the EMG?
     if recompute_EMG:

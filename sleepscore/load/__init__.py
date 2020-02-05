@@ -6,7 +6,7 @@ from . import utils
 
 def loader_switch(binPath, *args, datatype='SGLX', **kwargs):
     """Pipe to correct function for array loading.
-    
+
     Args:
         binPath (str or pathlib.Path): Path to binary data
         datatype (str): 'SGLX' or 'OpenEphys' (default 'SGLX')
@@ -15,7 +15,9 @@ def loader_switch(binPath, *args, datatype='SGLX', **kwargs):
     Kwargs:
         *kwargs: Passed to loading function for the considered data format
     """
-    assert datatype in ['SGLX', 'OpenEphys'], f'Data format: {datatype} not supported'
+    assert datatype in ['SGLX', 'OpenEphys'], (
+        f'Data format: {datatype} not supported'
+    )
     if datatype == 'SGLX':
         data, sf, channels, unit = read_SGLX(
             binPath,
@@ -41,10 +43,10 @@ def print_loading_output(binPath, data, sf, channels, unit):
 def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
               chanListType='indices', unit='uV'):
     """Load SpikeGLX data.
-    
+
     Args:
         binPath (str | pathlib.Path): Path to bin of recording
-    
+
     Kwargs:
         downSample (int | float | None): Frequency in Hz at which the data is
             subsampled. No subsampling if None. (default None)
@@ -98,7 +100,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
             [len(tup) == 2 for tup in snsChanMap_parsed]
         )  # Fails if there's ':' in the channel labels
         return snsChanMap_parsed
-        
+
     # Indices of loaded channels in recording, and original labels
     nSavedChans = int(meta['nSavedChans'])
     snsChanMap = parse_snsChanMap(meta)
@@ -119,7 +121,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
         chanLblList = [labelmap[orig_i] for orig_i in chanOrigIdxList]
     elif chanListType == 'labels':
         # Interpret the list of channels as a list of labels (indices on the
-        # probe)o
+        # probe)
         raise NotImplementedError
     print(f"Will load N={len(chanList)}/{nSavedChans} channels")
 
@@ -145,7 +147,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     elif unit.lower() == 'mv':
         factor = 1.e3
     if meta['typeThis'] == 'imec':
-    # apply gain correction and convert
+        # apply gain correction and convert
         convData = factor * SGLX.GainCorrectIM(DataRaw, chanIdxList, meta)
     else:
         # apply gain correction and convert
