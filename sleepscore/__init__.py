@@ -6,11 +6,10 @@ from pathlib import Path
 
 import numpy as np
 
-import load.utils
-import tools.EMGfromLFP
 from visbrain.gui import Sleep
 
-from .load import loader_switch
+from .tools import EMGfromLFP
+from .load import loader_switch, utils
 
 EMGCONFIGKEYS = [
     'LFP_chanList', 'LFP_downsample', 'LFP_chanListType', 'bandpass',
@@ -169,7 +168,7 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
     # parameters
     elif os.path.exists(EMGdatapath) and os.path.exists(EMGmetapath):
         print("Found preexisting EMG files...", end="")
-        EMG_metadata = load.utils.load_yaml(EMGmetapath)
+        EMG_metadata = utils.load_yaml(EMGmetapath)
         if (
             not all([
                 EMG_metadata[key] == value for key, value in EMG_config.items()
@@ -188,7 +187,7 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
     if not compute_EMG:
         print(f"\nLoading EMG files at {EMGdatapath}, {EMGmetapath}")
         EMG_data = np.load(EMGdatapath)
-        EMG_metadata = load.utils.load_yaml(EMGmetapath)
+        EMG_metadata = utils.load_yaml(EMGmetapath)
     else:
         print(f"Computing EMG from LFP:")
         print("Loading LFP for EMG computing")
@@ -203,7 +202,7 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
             tEnd=None,
         )
         print("Computing EMG from LFP")
-        EMG_data = tools.EMGfromLFP.compute_EMG(
+        EMG_data = EMGfromLFP.compute_EMG(
             lfp, sf,
             EMG_config['sf'], EMG_config['window_size'], EMG_config['bandpass'],
             EMG_config['bandstop']
@@ -221,7 +220,7 @@ def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
     # Save EMG
     if compute_EMG and save_EMG:
         print(f"Saving EMG metadata at {EMGmetapath}")
-        load.utils.save_yaml(EMGmetapath, EMG_metadata)
+        utils.save_yaml(EMGmetapath, EMG_metadata)
         print(f"Saving EMG data at {EMGdatapath}")
         np.save(EMGdatapath, EMG_data)
 
