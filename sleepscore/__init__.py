@@ -1,6 +1,7 @@
 """Load and sleepscore using visbrain.Sleep datasets in multiple formats."""
 
 import os.path
+import warnings
 # import subprocess
 from pathlib import Path
 
@@ -63,17 +64,19 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
         tEnd (float | None): Time in seconds from start of recording of last
             loaded sample. Duration of recording by default
         chanList (list(int) | None): List of loaded channels. All channels are
-            loaded by default.
+            loaded by default. Either interpreted as channel labels or indices
+            in the saved recording depending on the value of the chanListType
+            parameter.
         ChanListType (str): 'indices' or 'label'. If 'indices', chanList is
             interpreted as indices of saved channels. If 'labels', chanList is
-            interpreted as original indices of channels (can be different since)
-            not all channels are saved on file during a recording. (default
-            'indices')
-        chanLabelsMap (dict | None): Mapping used to redefine arbitrary labels
-            for each of the channels in chanList. If there is no entry in
-            chanLabelsMap for one of the channels, or if chanLabelsMap is None,
-            the displayed channel label is the original index/label as obtained
-            from the recording metadata. (default None)
+            interpreted as labels of channels (can be different since)
+            (default 'indices')
+        chanLabelsMap (dict | None): {<label>: <new_label>} Mapping used to
+            redefine arbitrary labels for each of the loaded channels in
+            chanList. If there is no entry in chanLabelsMap for one of the
+            channels, or if chanLabelsMap is None,
+            the displayed channel label is the original label as obtained
+            from the recording metadata. Keys are channel labels. (default None)
         unit (str): 'uV' or 'mV'. Unit the data is converted into
         add_EMG (bool): Do we gather and add to the data the lfp-derived EMG
             (default False)
@@ -130,16 +133,8 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
     )
 
     # Relabel channels and verbose which channels are used
-    if chanList is None or chanList == 'all':
-        chanList = range(len(chanOrigLabels))
-    chanLabels = [
-        (
-            chanLabelsMap[c] if chanLabelsMap is not None and c in chanLabelsMap
-            else chanOrigLabels[i]
-        )
-        for i, c in enumerate(chanList)
-    ]
-    print_used_channels(chanList, chanOrigLabels, chanLabels)
+    chanLabels = relabel_channels(chanOrigLabels, chanLabelsMap)
+    print_used_channels(chanOrigLabels, chanLabels)
 
     # Combine the EMG with the data
     if add_EMG:
@@ -158,13 +153,28 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
     ).show()
 
 
-def print_used_channels(chanList, chanOrigLabels, chanLabels):
+def relabel_channels(chanLabels, chanLabelsMap):
+    """Return remapped list of channel labels."""
+    if chanLabelsMap is None:
+        return chanLabels
+    missinglabels = set(chanLabelsMap.keys()) - set(chanLabels)
+    if missinglabels:
+        warnings.warn(
+            "The following channels could not be relabelled: {missinglabels}"
+        )
+    return [
+        chanLabelsMap[label] if label in chanLabelsMap else label
+        for label in chanLabels
+    ]
+
+
+def print_used_channels(chanOrigLabels, chanLabels):
     """Print which channels are used for sleepscoring."""
-    print(f"Used channels (<index in chanList>:<original label from file>:"
-          f"<displayed label> ):", end='\n  ')
+    print(f"Used channels:", end=' ')
+    print(f"(<original label>:<displayed label> ):", end=' ')
     print(' - '.join(
-        '{}:{}:{}'.format(*tup)
-        for tup in zip(chanList, chanOrigLabels, chanLabels)
+        '{}:{}'.format(*tup)
+        for tup in zip(chanOrigLabels, chanLabels)
     ))
 
 

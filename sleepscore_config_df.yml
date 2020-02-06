@@ -12,9 +12,9 @@ tStart: 0.0  # 0 (s)
 tEnd: null  # (s) / end of recording if None
 
 # Loaded channels
-chanList: [0] # All channels if `None`
-chanListType: 'indices'  # How are values in `chanList` interpreted? See doc
-chanLabelsMap: null  # Map channel relabelling (keys are values in `chanList`)
+chanList: [] # All channels loaded if `None` or 'all'. eg: ["LF0;384", "LF1;385"] (If chanListType = 'labels'), or [0, 1, -1] (If chanListType = 'indices')
+chanListType: 'labels'  # How are values in `chanList` interpreted? ('indices' or 'labels')
+chanLabelsMap: null  # Mapping for  channel relabelling (keys are channel labels). eg: {"LF0;384": 'cortex'}
 
 # Unit of returned data
 unit: 'uV'  # 'uV' or 'mV'

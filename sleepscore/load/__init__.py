@@ -41,7 +41,7 @@ def print_loading_output(binPath, data, sf, channels, unit):
 
 
 def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
-              chanListType='indices', unit='uV'):
+              chanListType='labels', unit='uV'):
     """Load SpikeGLX data.
 
     Args:
@@ -58,9 +58,9 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
             loaded by default.
         ChanListType (str): 'indices' or 'label'. If 'indices', chanList is
             interpreted as indices of saved channels. If 'labels', chanList is
-            interpreted as original indices of channels (can be different since)
+            interpreted as labels of channels (eg: "LF0;384")
             not all channels are saved on file during a recording. (default
-            'indices')
+            'labels')
         unit (str): 'uV' or 'mV'. Unit the data is converted into
 
     Returns:
@@ -83,47 +83,12 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     lastSamp = int(sRate*tEnd)
     print(f"Will load data from tStart={tStart}s to tEnd={tEnd}s")
 
-    def parse_snsChanMap(meta):
-        """Parse channel labels / channel id info in meta['snsChanMap'].
-
-        It is ridiculous that we have to do this ourselves.
-        meta['snsChanMap'] is formatted as follows::
-            (384,384,1)(AP0;0:0)(AP1;1:1)(...)...
-        """
-        mapstring = meta['snsChanMap']
-        maptuples = mapstring.strip(')(').split(')(')[1:]
-        snsChanMap_parsed = [
-            chaninfo.split(sep=':')
-            for chaninfo in maptuples
-        ]  # List of tuples: [(<chan_name>, <chan_orig_index>),...]
-        assert all(
-            [len(tup) == 2 for tup in snsChanMap_parsed]
-        )  # Fails if there's ':' in the channel labels
-        return snsChanMap_parsed
-
     # Indices of loaded channels in recording, and original labels
-    nSavedChans = int(meta['nSavedChans'])
-    snsChanMap = parse_snsChanMap(meta)
-    if chanList is None or chanList == 'all':
-        # Load all channels
-        chanList = range(0, nSavedChans)
-        chanListType = 'indices'
-    assert chanListType in ['indices', 'labels']
-    if chanListType == 'indices':
-        # Interpret the list of channels as a list of indices in saved recording
-        chanIdxList = [int(c) for c in chanList]
-        # Get the label of each channel
-        chanOrigIdxList = [
-            str(c) for c in SGLX.OriginalChans(meta)[chanIdxList]
-        ]  # Original channel Ids (amongst all channels,not only the ones saved)
-        #
-        labelmap = dict([(orig_i, label) for label, orig_i in snsChanMap])
-        chanLblList = [labelmap[orig_i] for orig_i in chanOrigIdxList]
-    elif chanListType == 'labels':
-        # Interpret the list of channels as a list of labels (indices on the
-        # probe)
-        raise NotImplementedError
-    print(f"Will load N={len(chanList)}/{nSavedChans} channels")
+    savedLabels = SGLX.savedChanLabels(meta)
+    chanIdxList, chanLblList = get_loaded_chans_idx_labels(
+        chanList, chanListType, savedLabels
+    )
+    print(f"Will load N={len(chanIdxList)}/{len(savedLabels)} channels")
 
     # Downsampling factor
     if downSample is None:
@@ -132,6 +97,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     dsf, downSample = utils.get_dsf(downSample, sRate)
     print(f"Will downsample from {sRate}Hz to {downSample}Hz")
 
+    print("Loading data of interest...")
     # Load RAW data and slice out data of interest
     DataRaw = SGLX.makeMemMapRaw(binPath, meta)[
         chanIdxList,
@@ -154,3 +120,30 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
         convData = factor * SGLX.GainCorrectNI(DataRaw, chanIdxList, meta)
 
     return convData, downSample, chanLblList, unit
+
+
+def get_loaded_chans_idx_labels(chanList, chanListType, savedLabels):
+    """Return lists of indices and labels of loaded channels."""
+    if chanList is None or chanList == 'all':
+        # Load all channels
+        chanList = range(0, len(savedLabels))
+        chanListType = 'indices'
+    assert chanListType in ['indices', 'labels']
+    if chanListType == 'indices':
+        # Interpret the list of channels as a list of indices in saved recording
+        chanIdxList = [int(c) for c in chanList]
+        chanLblList = [savedLabels[i] for i in chanIdxList]
+    elif chanListType == 'labels':
+        errorchans = set(chanList) - set(savedLabels)
+        if errorchans:
+            raise Exception(
+                f"The following channels labels were not found in data:"
+                f"{errorchans}\n"
+                f"Below are the labels of saved channels in the recording:\n"
+                f"{savedLabels}"
+            )
+        # Interpret the list of channels as a list of labels
+        chanIdxList, chanLblList = zip(
+            *enumerate([l for l in savedLabels if l in chanList])
+        )
+    return chanIdxList, chanLblList
