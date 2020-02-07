@@ -1,9 +1,6 @@
 """Load and sleepscore using visbrain.Sleep datasets in multiple formats."""
 
-import os.path
 import warnings
-# import subprocess
-from pathlib import Path
 
 import numpy as np
 import yaml
@@ -11,12 +8,7 @@ import yaml
 import EMGfromLFP
 from visbrain.gui import Sleep
 
-from .load import loader_switch, utils
-
-EMGCONFIGKEYS = [
-    'LFP_chanList', 'LFP_downsample', 'LFP_chanListType', 'bandpass',
-    'bandstop', 'sf', 'window_size'
-]
+from .load import loader_switch
 
 
 def run(config_path):
