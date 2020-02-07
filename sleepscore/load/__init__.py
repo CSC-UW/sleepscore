@@ -146,4 +146,4 @@ def get_loaded_chans_idx_labels(chanList, chanListType, savedLabels):
         chanIdxList, chanLblList = zip(
             *enumerate([l for l in savedLabels if l in chanList])
         )
-    return chanIdxList, chanLblList
+    return list(chanIdxList), list(chanLblList)

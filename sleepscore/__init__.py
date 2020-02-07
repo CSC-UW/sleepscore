@@ -6,12 +6,12 @@ import warnings
 from pathlib import Path
 
 import numpy as np
-
 import yaml
+
+import EMGfromLFP
 from visbrain.gui import Sleep
 
 from .load import loader_switch, utils
-from .tools import EMGfromLFP
 
 EMGCONFIGKEYS = [
     'LFP_chanList', 'LFP_downsample', 'LFP_chanListType', 'bandpass',
@@ -35,10 +35,7 @@ def run(config_path):
         chanList=config['chanList'],
         chanListType=config['chanListType'],
         chanLabelsMap=config['chanLabelsMap'],
-        add_EMG=config['add_EMG'],
-        save_EMG=config['save_EMG'],
-        recompute_EMG=config['recompute_EMG'],
-        EMG_config=config['EMG_config'],
+        EMGdatapath=config['EMGdatapath'],
         unit=config['unit'],
         kwargs_sleep=config['kwargs_sleep'],
     )
@@ -46,8 +43,8 @@ def run(config_path):
 
 def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
                    tEnd=None, chanList=None, chanListType='indices',
-                   chanLabelsMap=None, unit='uV', add_EMG=False, save_EMG=True,
-                   recompute_EMG=False, EMG_config=None, kwargs_sleep={}):
+                   chanLabelsMap=None, unit='uV', EMGdatapath=None,
+                   kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
 
     Args:
@@ -78,46 +75,14 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
             the displayed channel label is the original label as obtained
             from the recording metadata. Keys are channel labels. (default None)
         unit (str): 'uV' or 'mV'. Unit the data is converted into
-        add_EMG (bool): Do we gather and add to the data the lfp-derived EMG
-            (default False)
-        save_EMG (bool): Do we save newly computed EMG (default True)
-        recompute_EMG (bool): Do we force recomputing of EMG.
-        EMG_config (dict): TODO
+        EMGdatapath (str or None): Path to an EMG data file created using the
+            `EMGfromLFP` package (<https://github.com/csc-UW/EMGfromLFP>). If
+            possible, the EMG data will be loaded, the required time segment
+            extracted, resampled to match the desired sampling rate, and
+            appended to the data passed to `Sleep`
         kwargs_sleep (dict): Dictionary to pass to the `Sleep` instance during
             init. (default {})
     """
-
-    # Load or compute the EMG and select time segment of interest
-    if add_EMG:
-        print("\nGathering EMG")
-        print(f"EMG_config={EMG_config}")
-        # Make sure the derived EMG is at the same sampling frequency as the
-        # data:
-        if downSample is None:
-            print("`downSample` is None but we load an EMG: set `downSample` to"
-                  f"the EMG sf: {EMG_config['sf']}")
-            downSample = EMG_config['sf']
-        elif downSample != EMG_config['sf']:
-            print("`downSample` != EMG_config['sf'] !"
-                  f" -> Modifying `EMG_config['sf']` to {downSample}Hz")
-            EMG_config['sf'] = downSample
-        # Load the EMG
-        EMG_data, EMG_metadata = get_EMG(
-            binPath, EMG_config, datatype=datatype, save_EMG=save_EMG,
-            recompute_EMG=recompute_EMG
-        )
-        assert EMG_metadata['sf'] == downSample
-        # Select time segment of interest for EMG
-        if tStart is None:
-            tStart = 0.0
-        firstSamp = int(tStart * EMG_metadata['sf'])
-        if tEnd is None:
-            lastSamp = EMG_data.shape[1]
-        else:
-            lastSamp = int(tEnd * EMG_metadata['sf'])
-        EMG_data = EMG_data[:, firstSamp:lastSamp+1]
-    else:
-        print("\nIgnoring derivedEMG stuff")
 
     # Preload and downsample specific parts of the data
     print("\nLoading data")
@@ -132,17 +97,26 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
         unit=unit
     )
 
-    # Relabel channels and verbose which channels are used
-    chanLabels = relabel_channels(chanOrigLabels, chanLabelsMap)
-    print_used_channels(chanOrigLabels, chanLabels)
+    # Load the EMG
+    if EMGdatapath:
+        print("\nLoading the EMG")
+        EMG_data, _ = EMGfromLFP.load_EMG(
+            EMGdatapath,
+            tStart=tStart,
+            tEnd=tEnd,
+            desired_length=data.shape[1],
+        )  # Load, select time points of interest and resample
 
-    # Combine the EMG with the data
-    if add_EMG:
-        print("\nCombining data and derivedEMG")
+        print("Combining data and derivedEMG")
         # At this point the EMG and data should have same number of samples and
         # same sf
         data = np.concatenate((data, EMG_data), axis=0)
-        chanLabels.append('derivedEMG')
+        EMGlabel = 'derivedEMG'
+        chanOrigLabels.append(EMGlabel)
+
+    # Relabel channels and verbose which channels are used
+    chanLabels = relabel_channels(chanOrigLabels, chanLabelsMap)
+    print_used_channels(chanOrigLabels, chanLabels)
 
     print("\nCalling Sleep")
     Sleep(
@@ -176,93 +150,3 @@ def print_used_channels(chanOrigLabels, chanLabels):
         '{}:{}'.format(*tup)
         for tup in zip(chanOrigLabels, chanLabels)
     ))
-
-
-def get_EMG(binPath, EMG_config, datatype='SGLX', save_EMG=True,
-            recompute_EMG=False):
-    """Load or compute the lfp-derived EMG.
-
-    Args:
-        binPath: Path to bin of recording of interest. The EMG data and metadata
-            are is saved or loaded from the same directory as the raw recording
-
-    """
-
-    # Validate params
-    assert set(EMG_config.keys()) == set(EMGCONFIGKEYS)
-
-    # Get paths
-    binPath = Path(binPath)
-    EMGdatapath = Path(binPath.parent / (binPath.stem + ".derivedEMGdata.npy"))
-    EMGmetapath = Path(
-        binPath.parent / (binPath.stem + ".derivedEMGmetadata.yml")
-    )
-
-    # Do we compute the EMG?
-    if recompute_EMG:
-        print("Forcing recomputation of EMG.")
-        compute_EMG = True
-    # Don't recompute if it was already computed and saved with the same
-    # parameters
-    elif os.path.exists(EMGdatapath) and os.path.exists(EMGmetapath):
-        print("Found preexisting EMG files...", end="")
-        EMG_metadata = utils.load_yaml(EMGmetapath)
-        if (
-            not all([
-                EMG_metadata[key] == value for key, value in EMG_config.items()
-            ])
-            or str(binPath) != EMG_metadata['binPath']
-        ):
-            print("...but with different parameters. Recomputing!")
-            compute_EMG = True
-        else:
-            compute_EMG = False
-    # Otherwise we compute it
-    else:
-        compute_EMG = True
-
-    # Load or compute EMG
-    if not compute_EMG:
-        print(f"\nLoading EMG files at {EMGdatapath}, {EMGmetapath}")
-        EMG_data = np.load(EMGdatapath)
-        EMG_metadata = utils.load_yaml(EMGmetapath)
-    else:
-        print(f"Computing EMG from LFP:")
-        print("Loading LFP for EMG computing")
-        # Load LFP for channels of interest
-        lfp, sf, chanLabels, _ = loader_switch(
-            binPath,
-            datatype=datatype,
-            chanList=EMG_config['LFP_chanList'],
-            chanListType=EMG_config['LFP_chanListType'],
-            downSample=EMG_config['LFP_downsample'],
-            tStart=None,
-            tEnd=None,
-        )
-        print(f"Using the following channels for EMG derivation (labels): "
-              f"{' - '.join(chanLabels)}")
-        print("Computing EMG from LFP")
-        EMG_data = EMGfromLFP.compute_EMG(
-            lfp, sf,
-            EMG_config['sf'], EMG_config['window_size'], EMG_config['bandpass'],
-            EMG_config['bandstop']
-        )
-        # Generate EMG metadata
-        EMG_metadata = EMG_config.copy()
-        EMG_metadata['binPath'] = str(binPath)
-        EMG_metadata['datatype'] = datatype
-        EMG_metadata['EMGdatapath'] = str(EMGdatapath)
-        EMG_metadata['EMGmetapath'] = str(EMGmetapath)
-        EMG_metadata['LFP_chanLabels'] = chanLabels
-        # EMG_metadata['gitcommit'] = subprocess.check_output(
-        #     ["git", "describe"]
-        # ).strip()
-
-    # Save EMG
-    if compute_EMG and save_EMG:
-        print(f"Saving EMG metadata at {EMGmetapath}")
-        utils.save_yaml(EMGmetapath, EMG_metadata)
-        print(f"Saving EMG data at {EMGdatapath}")
-        np.save(EMGdatapath, EMG_data)
-
-    return EMG_data, EMG_metadata
