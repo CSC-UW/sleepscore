@@ -24,7 +24,7 @@ def run(config_path):
 
 
 def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
-                   tEnd=None, chanList=None, chanListType='indices',
+                   tEnd=None, chanList=None, chanListType='labels',
                    chanLabelsMap=None, unit='uV', EMGdatapath=None,
                    kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
