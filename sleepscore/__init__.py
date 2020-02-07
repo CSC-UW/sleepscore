@@ -25,20 +25,10 @@ def run(config_path):
         config = yaml.load(f, Loader=yaml.FullLoader)
 
     print(f"Sleepscore config: \n Path={config_path}, \n Config={config}, \n")
+    
+    binPath = config.pop('binPath')
 
-    load_and_score(
-        config['binPath'],
-        datatype=config['datatype'],
-        downSample=config['downSample'],
-        tStart=config['tStart'],
-        tEnd=config['tEnd'],
-        chanList=config['chanList'],
-        chanListType=config['chanListType'],
-        chanLabelsMap=config['chanLabelsMap'],
-        EMGdatapath=config['EMGdatapath'],
-        unit=config['unit'],
-        kwargs_sleep=config['kwargs_sleep'],
-    )
+    load_and_score(binPath, **config)
 
 
 def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
