@@ -84,6 +84,10 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     print(f"Will load data from tStart={tStart}s to tEnd={tEnd}s")
 
     # Indices of loaded channels in recording, and original labels
+    assert chanList is None or chanList == 'all' or len(chanList) > 0, (
+        "The chanList parameter should be None, 'all' or a non-empty list."
+        f"Currently chanList = {chanList}"
+    )
     savedLabels = SGLX.savedChanLabels(meta)
     chanIdxList, chanLblList = get_loaded_chans_idx_labels(
         chanList, chanListType, savedLabels
