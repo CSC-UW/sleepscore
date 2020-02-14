@@ -61,13 +61,11 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
             interpreted as labels of channels (eg: "LF0;384")
             not all channels are saved on file during a recording. (default
             'labels')
-        unit (str): 'uV' or 'mV'. Unit the data is converted into
 
     Returns:
         data (np.ndarray): The raw data of shape (n_channels, n_points)
         downsample (float):The down-sampling frequency used.
         channels (list(str)): List of channel names / original indices
-        unit (str): Unit of returned data
     """
     print(f"Load SpikeGLX data at {binPath}")
     meta = SGLX.readMeta(Path(binPath))
@@ -110,12 +108,10 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
 
     # Convert raw data to requested unit
     # This transforms the memmap into nparray
+    unit = 'uv'
     print(f"Convert data to {unit}")
-    assert unit.lower() in ['uv', 'mv']
     if unit.lower() == 'uv':
         factor = 1.e6
-    elif unit.lower() == 'mv':
-        factor = 1.e3
     if meta['typeThis'] == 'imec':
         # apply gain correction and convert
         convData = factor * SGLX.GainCorrectIM(DataRaw, chanIdxList, meta)
@@ -123,7 +119,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
         # apply gain correction and convert
         convData = factor * SGLX.GainCorrectNI(DataRaw, chanIdxList, meta)
 
-    return convData, downSample, chanLblList, unit
+    return convData, downSample, chanLblList
 
 
 def get_loaded_chans_idx_labels(chanList, chanListType, savedLabels):

@@ -25,7 +25,7 @@ def run(config_path):
 
 def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
                    tEnd=None, chanList=None, chanListType='labels',
-                   chanLabelsMap=None, unit='uV', EMGdatapath=None,
+                   chanLabelsMap=None, EMGdatapath=None,
                    kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
 
@@ -56,7 +56,6 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
             channels, or if chanLabelsMap is None,
             the displayed channel label is the original label as obtained
             from the recording metadata. Keys are channel labels. (default None)
-        unit (str): 'uV' or 'mV'. Unit the data is converted into
         EMGdatapath (str or None): Path to an EMG data file created using the
             `EMGfromLFP` package (<https://github.com/csc-UW/EMGfromLFP>). If
             possible, the EMG data will be loaded, the required time segment
@@ -68,7 +67,7 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
 
     # Preload and downsample specific parts of the data
     print("\nLoading data")
-    data, sf, chanOrigLabels, unit = loader_switch(
+    data, sf, chanOrigLabels = loader_switch(
         binPath,
         datatype=datatype,
         downSample=downSample,
@@ -76,7 +75,6 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
         tEnd=tEnd,
         chanList=chanList,
         chanListType=chanListType,
-        unit=unit
     )
 
     # Load the EMG
