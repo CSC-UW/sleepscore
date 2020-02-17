@@ -26,22 +26,21 @@ def loader_switch(binPath, *args, datatype='SGLX', **kwargs):
     elif datatype == 'OpenEphys':
         raise NotImplementedError
 
-    print_loading_output(binPath, data, sf, channels, unit)
-    return data, sf, channels, unit
+    print_loading_output(binPath, data, sf, channels)
+    return data, sf, channels
 
 
-def print_loading_output(binPath, data, sf, channels, unit):
+def print_loading_output(binPath, data, sf, channels):
     info = ("Data successfully loaded (%s):"
             "\n- Down-sampling frequency : %.2fHz"
             "\n- Number of time points (after down-sampling): %i"
             "\n- Number of channels : %i"
-            "\n- Unit : %s"
             )
-    print(info % (binPath, sf, data.shape[1], len(channels), unit))
+    print(info % (binPath, sf, data.shape[1], len(channels)))
 
 
 def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
-              chanListType='labels', unit='uV'):
+              chanListType='labels'):
     """Load SpikeGLX data.
 
     Args:
