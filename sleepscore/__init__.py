@@ -24,9 +24,8 @@ def run(config_path):
 
 
 def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
-                   tEnd=None, chanList=None, chanListType='labels',
-                   chanLabelsMap=None, EMGdatapath=None,
-                   kwargs_sleep={}):
+                   tEnd=None, chanList=None, chanLabelsMap=None,
+                   EMGdatapath=None, kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
 
     Args:
@@ -42,14 +41,8 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
             loaded sample. Default 0.0
         tEnd (float | None): Time in seconds from start of recording of last
             loaded sample. Duration of recording by default
-        chanList (list(int) | None): List of loaded channels. All channels are
-            loaded by default. Either interpreted as channel labels or indices
-            in the saved recording depending on the value of the chanListType
-            parameter.
-        ChanListType (str): 'indices' or 'label'. If 'indices', chanList is
-            interpreted as indices of saved channels. If 'labels', chanList is
-            interpreted as labels of channels (can be different since)
-            (default 'indices')
+        chanList (list(str) | None): List of labels of loaded channels. All
+            channels are loaded by default. (default None)
         chanLabelsMap (dict | None): {<label>: <new_label>} Mapping used to
             redefine arbitrary labels for each of the loaded channels in
             chanList. If there is no entry in chanLabelsMap for one of the
@@ -74,7 +67,6 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
         tStart=tStart,
         tEnd=tEnd,
         chanList=chanList,
-        chanListType=chanListType,
     )
 
     # Load the EMG
