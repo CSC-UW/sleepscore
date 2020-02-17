@@ -13,13 +13,17 @@ def get_dsf(downsample, sf):
         The down-sampling frequency.
     sf : float
         The sampling frequency
+    
+    Return:
+        dsf, target_sf
     """
-    if all([isinstance(k, (int, float)) for k in (downsample, sf)]):
+    if downsample is None:
+        return 1, sf
+    else:
+        assert all([isinstance(k, (int, float)) for k in (downsample, sf)])
         dsf = int(np.round(sf / downsample))
         downsample = float(sf / dsf)
         return dsf, downsample
-    else:
-        return 1, downsample
 
 
 def load_yaml(path):
