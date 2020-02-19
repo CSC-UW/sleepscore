@@ -32,23 +32,24 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
         binPath (str | pathlib.Path): Path to bin of recording
 
     Kwargs:
-        datatype (str): 'SGLX' or 'OpenEphys' (default 'SGLX')
+        datatype (str): 'SGLX' , 'TDT' or 'OpenEphys' (default 'SGLX')
         downSample (int | float | None): Frequency in Hz at which the data is
-            subsampled. No subsampling if None, except if we load a derived-EMG.
-            In this case we set the downsampling frequency to the sampling
-            frequency of the EEG. (default 100.0)
+            subsampled. No subsampling if None (default 100.0)
         tStart (float | None): Time in seconds from start of recording of first
             loaded sample. Default 0.0
         tEnd (float | None): Time in seconds from start of recording of last
-            loaded sample. Duration of recording by default
+            loaded sample. Duration of recording in None. (default None)
         chanList (list(str) | None): List of loaded channels. All
             channels are loaded by default. (default None)
                 - for SGLX data: `chanList` is interpreted
-                as labels of channels.
+                as labels of channels,
+                  eg: ["LF0;384", "LF1;385"]
                 - for TDT data: Values in ChanList should be string formatted as
                 follows::
                     [<score_name>-<channel_index>, ...]
-                eg: [LFPs-0, LFPs-1, EEGs-0, EEGs-1, ...]
+                Where channels are 1-indexed, (IMPORTANT) not 0-indexed (for
+                consistency with tdt methods)
+                    eg: [LFPs-1, LFPs-2, EEGs-1, EEGs-94, EMGs-1...]
         chanLabelsMap (dict | None): {<channel>: <new_label>} Mapping used to
             redefine arbitrary labels for each of the loaded channels in
             chanList. If there is no entry in chanLabelsMap for one of the

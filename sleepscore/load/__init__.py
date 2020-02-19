@@ -62,8 +62,8 @@ def read_TDT(binPath, downSample=None, tStart=None, tEnd=None, chanList=None):
         chanList (list(string)): List of loaded channels. Should be non empty.
             The provided list should be formatted as follows::
                     [<score_name>-<channel_index>, ...]
-            Where channels are 1-indexed, not 0-indexed (for consistency with
-            tdt methods)
+            Where channels are 1-indexed, (IMPORTANT) not 0-indexed (for
+            consistency with tdt methods)
                 eg: [LFPs-1, LFPs-2, EEGs-1, EEGs-94, EMGs-1...]
 
     Returns:
@@ -182,6 +182,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
             loaded sample. Duration of recording by default
         chanList (list(int) | None): List of loaded channels. All channels are
             loaded by default.
+                eg: ["LF0;384", "LF1;385"]
         ChanListType (str): 'indices' or 'label'. If 'indices', chanList is
             interpreted as indices of saved channels. If 'labels', chanList is
             interpreted as labels of channels (eg: "LF0;384")
