@@ -56,33 +56,37 @@ parameter is described in the `sleepscore.load_and_score` function:
           binPath (str | pathlib.Path): Path to bin of recording
 
       Kwargs:
-          datatype (str): 'SGLX' or 'OpenEphys' (default 'SGLX')
-          downSample (int | float | None): Frequency in Hz at which the data is
-              subsampled. No subsampling if None. (default 100.0)
-          tStart (float | None): Time in seconds from start of recording of first
-              loaded sample. Default 0.0
-          tEnd (float | None): Time in seconds from start of recording of last
-              loaded sample. Duration of recording by default
-          chanList (list(int) | None): List of loaded channels. All channels are
-              loaded by default.
-          ChanListType (str): 'indices' or 'label'. If 'indices', chanList is
-              interpreted as indices of saved channels. If 'labels', chanList is
-              interpreted as original indices of channels (can be different since)
-              not all channels are saved on file during a recording. (default
-              'indices')
-          chanLabelsMap (dict | None): Mapping used to redefine arbitrary labels
-              for each of the channels in chanList. If there is no entry in
-              chanLabelsMap for one of the channels, or if chanLabelsMap is None,
-              the displayed channel label is the original index/label as obtained
-              from the recording metadata. (default None)
-          add_EMG (bool): Do we gather and add to the data the lfp-derived EMG
-              (default False)
-          save_EMG (bool): Do we save newly computed EMG (default True)
-          recompute_EMG (bool): Do we force recomputing of EMG.
-          EMG_config (dict): TODO
-          unit (str): 'uV' or 'mV'. Unit the data is converted into
-          kwargs_sleep (dict): Dictionary to pass to the `Sleep` instance during
-              init. (default {})
+        datatype (str): 'SGLX' , 'TDT' or 'OpenEphys' (default 'SGLX')
+        downSample (int | float | None): Frequency in Hz at which the data is
+            subsampled. No subsampling if None, except if we load a derived-EMG.
+            In this case we set the downsampling frequency to the sampling
+            frequency of the EEG. (default 100.0)
+        tStart (float | None): Time in seconds from start of recording of first
+            loaded sample. Default 0.0
+        tEnd (float | None): Time in seconds from start of recording of last
+            loaded sample. Duration of recording by default
+        chanList (list(str) | None): List of loaded channels. All
+            channels are loaded by default. (default None)
+                - for SGLX data: `chanList` is interpreted
+                as labels of channels.
+                - for TDT data: Values in ChanList should be string formatted as
+                follows::
+                    [<score_name>-<channel_index>, ...]
+                eg: [LFPs-0, LFPs-1, EEGs-0, EEGs-1, ...]
+        chanLabelsMap (dict | None): {<channel>: <new_label>} Mapping used to
+            redefine arbitrary labels for each of the loaded channels in
+            chanList. If there is no entry in chanLabelsMap for one of the
+            channels, or if chanLabelsMap is None,
+            the displayed channel label is the original label as obtained
+            from the recording metadata. Keys are values from chanList. (default
+            None)
+        EMGdatapath (str or None): Path to an EMG data file created using the
+            `EMGfromLFP` package (<https://github.com/csc-UW/EMGfromLFP>). If
+            possible, the EMG data will be loaded, the required time segment
+            extracted, resampled to match the desired sampling rate, and
+            appended to the data passed to `Sleep`
+        kwargs_sleep (dict): Dictionary to pass to the `Sleep` instance during
+            init. (default {})
       ```
 
 

@@ -41,14 +41,21 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
             loaded sample. Default 0.0
         tEnd (float | None): Time in seconds from start of recording of last
             loaded sample. Duration of recording by default
-        chanList (list(str) | None): List of labels of loaded channels. All
+        chanList (list(str) | None): List of loaded channels. All
             channels are loaded by default. (default None)
-        chanLabelsMap (dict | None): {<label>: <new_label>} Mapping used to
+                - for SGLX data: `chanList` is interpreted
+                as labels of channels.
+                - for TDT data: Values in ChanList should be string formatted as
+                follows::
+                    [<score_name>-<channel_index>, ...]
+                eg: [LFPs-0, LFPs-1, EEGs-0, EEGs-1, ...]
+        chanLabelsMap (dict | None): {<channel>: <new_label>} Mapping used to
             redefine arbitrary labels for each of the loaded channels in
             chanList. If there is no entry in chanLabelsMap for one of the
             channels, or if chanLabelsMap is None,
             the displayed channel label is the original label as obtained
-            from the recording metadata. Keys are channel labels. (default None)
+            from the recording metadata. Keys are values from chanList. (default
+            None)
         EMGdatapath (str or None): Path to an EMG data file created using the
             `EMGfromLFP` package (<https://github.com/csc-UW/EMGfromLFP>). If
             possible, the EMG data will be loaded, the required time segment
@@ -100,18 +107,20 @@ def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
 
 
 def relabel_channels(chanLabels, chanLabelsMap):
-    """Return remapped list of channel labels."""
+    """Return remapped list of channel labels. """
     if chanLabelsMap is None:
-        return chanLabels
+        chanLabelsMap = {}
     missinglabels = set(chanLabelsMap.keys()) - set(chanLabels)
     if missinglabels:
         warnings.warn(
             "The following channels could not be relabelled: {missinglabels}"
         )
-    return [
+    relabelled_chans = [
         chanLabelsMap[label] if label in chanLabelsMap else label
         for label in chanLabels
     ]
+    # TODO: Fix Sleep's chanlabel "cleaning"
+    return [c.replace('-', ',') for c in relabelled_chans]  # Sleep misreads '-'
 
 
 def print_used_channels(chanOrigLabels, chanLabels):
