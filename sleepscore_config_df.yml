@@ -1,8 +1,8 @@
 # User config for `sleepscore` call"""
 
 # Path to Dataset
-binPath: "/Users/tom/data/neuropixels/11-25-2019_g2/10-25-2019_g2_imec0/10-25-2019_g2_t0.imec0.lf.bin"
-datatype: 'SGLX'
+binPath: ""  # Path to bin ('SGLX') or block directory ('TDT')
+datatype: ''  # 'SGLX' or 'TDT'
 
 # Downsampling frequency
 downSample: 100.0  # (Hz)
@@ -12,8 +12,7 @@ tStart: 0.0  # 0 (s)
 tEnd: null  # (s) / end of recording if None
 
 # Loaded channels
-# chanList: [] # List of labels of loaded channels. See doc. eg: ["LF0;384", "LF1;385"] (SGLX) or [LFPs-1, LFPs-2, EEGs-1] (TDT)
-]
+chanList: [] # List of labels of loaded channels. See doc. eg: ["LF0;384", "LF1;385"] (SGLX) or [LFPs-1, LFPs-2, EEGs-1, EMGs-1] (TDT)
 chanLabelsMap: null  # Mapping for  channel relabelling (keys are channel labels). eg: {"LF0;384": 'cortex'}
 
 # Derived EMG added to the data
