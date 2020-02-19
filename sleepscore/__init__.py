@@ -17,13 +17,20 @@ def run(config_path):
         config = yaml.load(f, Loader=yaml.FullLoader)
 
     print(f"Sleepscore config: \n Path={config_path}, \n Config={config}, \n")
+
+    # Validate keys in config
+    df_values = get_default_args(load_and_score)
+    for k, v in [(k, v) for k, v in df_values.items() if k not in config]:
+        print(f"Key {k} is missing from config. Using its default value: {v}")
+    for k in [k for k in config if k not in df_values]:
+        print(f"Config key {k} is not recognized")
     
     binPath = config.pop('binPath')
 
     load_and_score(binPath, **config)
 
 
-def load_and_score(binPath, datatype='SGLX', downSample=100.0, tStart=None,
+def load_and_score(binPath, datatype=None, downSample=100.0, tStart=None,
                    tEnd=None, chanList=None, chanLabelsMap=None,
                    EMGdatapath=None, kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
@@ -132,3 +139,13 @@ def print_used_channels(chanOrigLabels, chanLabels):
         '{}:{}'.format(*tup)
         for tup in zip(chanOrigLabels, chanLabels)
     ))
+
+
+def get_default_args(func):
+    import inspect
+    signature = inspect.signature(func)
+    return {
+        k: v.default
+        for k, v in signature.parameters.items()
+        # if v.default is not inspect.Parameter.empty
+    }
