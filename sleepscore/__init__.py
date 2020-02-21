@@ -87,6 +87,7 @@ def load_and_score(binPath, datatype=None, downSample=100.0, tStart=None,
     # Load the EMG
     if EMGdatapath:
         print("\nLoading the EMG")
+        tEnd = data.shape[1] / sf  # Will fail if EMG is shorter
         EMG_data, _ = EMGfromLFP.load_EMG(
             EMGdatapath,
             tStart=tStart,
