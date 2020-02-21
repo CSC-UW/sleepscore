@@ -24,7 +24,15 @@ def run(config_path):
         print(f"Key {k} is missing from config. Using its default value: {v}")
     for k in [k for k in config if k not in df_values]:
         print(f"Config key {k} is not recognized")
-    
+    # Check USER didn't write "None" instead of yaml's "null"
+    none_keys = [k for k, v in config.items()
+                 if isinstance(v, str) and v.lower() == 'none']
+    if none_keys:
+        raise ValueError(
+            f"Python's 'None' value should be written 'null' in yaml. Please"
+            f" update your config file accordingly (check keys = {none_keys})"
+        )
+
     binPath = config.pop('binPath')
 
     load_and_score(binPath, **config)
