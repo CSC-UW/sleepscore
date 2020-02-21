@@ -19,7 +19,7 @@ install_requires = [
     'pandas',
     'tqdm',
     'pathlib',
-    'tdt',
+    'tdt>=0.3.3'
 ]
 
 setup(

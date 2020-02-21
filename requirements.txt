@@ -5,4 +5,4 @@ docopt
 pandas
 tqdm
 pathlib
-tdt
+tdt>=0.3.3
