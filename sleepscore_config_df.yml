@@ -1,7 +1,7 @@
 # User config for `sleepscore` call"""
 
 # Path to Dataset
-binPath: ""  # Path to bin ('SGLX') or block directory ('TDT')
+binPath: ''  # Path to bin ('SGLX') or block directory ('TDT'). Must be single-quoted.
 datatype: ''  # 'SGLX' or 'TDT'
 
 # Downsampling frequency
