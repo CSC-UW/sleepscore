@@ -5,3 +5,4 @@ docopt
 pandas
 tqdm
 pathlib
+tdt
