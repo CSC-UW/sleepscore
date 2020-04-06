@@ -94,15 +94,19 @@ def read_TDT(binPath, downSample=None, tStart=None, tEnd=None, chanList=None):
         return store, int(chan)
 
     # Check length and formatting of `chanList parameter`
-    assert (len(chanList) > 0
-            and all([validate_chan(s) for s in chanList])
-            and all([parse_chan(s)[1] > 0 for s in chanList])), (
+    chanList_error_msg = (
         "`chanList` should be a non-empty list of strings and formatted as "
         "follows:\n         [<score_name>-<channel_index>, ...], \n"
         "where channel indices are 1-indexed (not 0-indexed). eg: \n"
         "       [LFPs-1, LFPs-2, EEGs-1, EEGs-94, EMGs-1...] \n"
         f"Currently chanList = {chanList}"
     )
+    if chanList is None:
+        raise ValueError(chanList_error_msg)
+    if not (len(chanList) > 0
+            and all([validate_chan(s) for s in chanList])
+            and all([parse_chan(s)[1] > 0 for s in chanList])):
+        raise ValueError(chanList_error_msg)
 
     # Load and downsample data for all requested channels
     chan_dat_list = []  # List of channel data arrays to concatenate
