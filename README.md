@@ -50,37 +50,44 @@ pip install -e .
 2.  Manually set the parameters for the copied config file. The meaning of each
 parameter is described in the `sleepscore.load_and_score` function:
 
+```python
+    """
+    Args:
+        datasets (list(dict)): List of dictionaries specifying the data to load.
+            Each of the dictionaries specifies the data loaded from a specific
+            dataset. For each of the dictionaries, the following keys are
+            recognized:
+                binPath (str | pathlib.Path): Path to bin of recording
+                    (mandatory)
+                datatype (str): 'SGLX' , 'TDT' or 'OpenEphys' (default 'SGLX')
+                chanList (list(str) | None): List of loaded channels. All
+                    channels are loaded by default. (default None)
+                        - for SGLX data: `chanList` is interpreted
+                            as labels of channels, eg::
+                                ["LF0;384", "LF1;385"]
+                        - for TDT data: Values in ChanList should be string
+                            formatted as follows::
+                                [<score_name>-<channel_index>, ...]
+                            Where channels are 1-indexed, (IMPORTANT) not
+                            0-indexed (for consistency with tdt methods), eg::
+                                [LFPs-1, LFPs-2, EEGs-1, EEGs-94, EMGs-1]
+                chanLabelsMap (dict | None): {<channel>: <new_label>} Mapping
+                    used to redefine arbitrary labels for each of the loaded
+                    channels in chanList. If there is no entry in chanLabelsMap
+                    for one of the channels, or if chanLabelsMap is None, the
+                    displayed channel label is the original label as obtained
+                    from the recording metadata. Keys are values from chanList.
+                    (default None)
+                name (str | None): Name of the dataset. If specified, prepended
+                    to the channel labels displayed in Sleep.
 
-      ```
-      Args:
-          binPath (str | pathlib.Path): Path to bin of recording
-
-      Kwargs:
-        datatype (str): 'SGLX' , 'TDT' or 'OpenEphys' (default 'SGLX')
-        downSample (int | float | None): Frequency in Hz at which the data is
-            subsampled. No subsampling if None (default 100.0)
+    Kwargs:
+        downSample (int | float | None): Frequency in Hz at which all the data
+            is subsampled. No subsampling if None (default 100.0)
         tStart (float | None): Time in seconds from start of recording of first
             loaded sample. Default 0.0
         tEnd (float | None): Time in seconds from start of recording of last
             loaded sample. Duration of recording in None. (default None)
-        chanList (list(str) | None): List of loaded channels. All
-            channels are loaded by default. (default None)
-                - for SGLX data: `chanList` is interpreted
-                as labels of channels,
-                  eg: ["LF0;384", "LF1;385"]
-                - for TDT data: Values in ChanList should be string formatted as
-                follows::
-                    [<score_name>-<channel_index>, ...]
-                Where channels are 1-indexed, (IMPORTANT) not 0-indexed (for
-                consistency with tdt methods)
-                    eg: [LFPs-1, LFPs-2, EEGs-1, EEGs-94, EMGs-1...]
-        chanLabelsMap (dict | None): {<channel>: <new_label>} Mapping used to
-            redefine arbitrary labels for each of the loaded channels in
-            chanList. If there is no entry in chanLabelsMap for one of the
-            channels, or if chanLabelsMap is None,
-            the displayed channel label is the original label as obtained
-            from the recording metadata. Keys are values from chanList. (default
-            None)
         EMGdatapath (str or None): Path to an EMG data file created using the
             `EMGfromLFP` package (<https://github.com/csc-UW/EMGfromLFP>). If
             possible, the EMG data will be loaded, the required time segment
@@ -88,8 +95,8 @@ parameter is described in the `sleepscore.load_and_score` function:
             appended to the data passed to `Sleep`
         kwargs_sleep (dict): Dictionary to pass to the `Sleep` instance during
             init. (default {})
-      ```
-
+    """
+```
 
 1.  Run the package using either of the following:
 
