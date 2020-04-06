@@ -1,4 +1,5 @@
 """Load data in multiple formats as memmaps or arrays."""
+import os.path
 from pathlib import Path
 
 import numpy as np
@@ -28,6 +29,10 @@ def loader_switch(binPath, *args, datatype='SGLX', **kwargs):
     )
     if datatype == 'OpenEphys':
         raise NotImplementedError
+
+    if not os.path.exists(binPath):
+        raise FileNotFoundError(f"No file at binPath: `{binPath}`")
+
     data, sf, channels = LOADING_FUNCTIONS[datatype.lower()](
         binPath,
         **kwargs
