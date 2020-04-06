@@ -1,8 +1,13 @@
 # User config for `sleepscore` call"""
 
-# Path to Dataset
-binPath: ''  # Path to bin ('SGLX') or block directory ('TDT'). Must be single-quoted.
-datatype: ''  # 'SGLX' or 'TDT'
+# Loaded data
+datasets:
+  -
+    binPath: ''  # Path to bin ('SGLX') or block directory ('TDT'). Must be single-quoted.
+    datatype: ''  # 'SGLX' or 'TDT'
+    chanList: [] # List of labels of loaded channels. See doc. eg: ["LF0;384", "LF1;385"] (SGLX) or [LFPs-1, LFPs-2, EEGs-1, EMGs-1] (TDT)
+    chanLabelsMap: null  # Mapping for  channel relabelling (keys are values in chanList). eg: {"LF0;384": 'cortex'}
+    name: None  # Name of dataset. Prepended to channel labels (after relabelling) if specified and non-empty.
 
 # Downsampling frequency
 downSample: 100.0  # (Hz)
@@ -10,10 +15,6 @@ downSample: 100.0  # (Hz)
 # Duration of the segment of data loaded
 tStart: 0.0  # 0 (s)
 tEnd: null  # (s) / end of recording if None
-
-# Loaded channels
-chanList: [] # List of labels of loaded channels. See doc. eg: ["LF0;384", "LF1;385"] (SGLX) or [LFPs-1, LFPs-2, EEGs-1, EMGs-1] (TDT)
-chanLabelsMap: null  # Mapping for  channel relabelling (keys are channel labels). eg: {"LF0;384": 'cortex'}
 
 # Derived EMG added to the data
 EMGdatapath: null
