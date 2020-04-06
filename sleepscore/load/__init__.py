@@ -23,10 +23,11 @@ def loader_switch(binPath, *args, datatype='SGLX', **kwargs):
     Kwargs:
         *kwargs: Passed to loading function for the considered data format
     """
-    assert datatype in DATA_FORMATS, (
-        f'Data format: {datatype} not supported.\n'
-        f'Recognized values for `datatype` parameter: {DATA_FORMATS}'
-    )
+    if datatype not in DATA_FORMATS:
+        raise ValueError(
+            f'Data format: `{datatype}` not supported.\n'
+            f'Supported values for `datatype` parameter: {DATA_FORMATS}'
+        )
     if datatype == 'OpenEphys':
         raise NotImplementedError
 
