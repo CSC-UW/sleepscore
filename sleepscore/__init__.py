@@ -133,7 +133,7 @@ def relabel_channels(chanLabels, chanLabelsMap):
             "The following channels could not be relabelled: {missinglabels}"
         )
     relabelled_chans = [
-        chanLabelsMap[label] if label in chanLabelsMap else label
+        str(chanLabelsMap[label]) if label in chanLabelsMap else label
         for label in chanLabels
     ]
     # TODO: Fix Sleep's chanlabel "cleaning"
