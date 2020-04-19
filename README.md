@@ -3,10 +3,13 @@
 This repository allows one to perform sleepscoring of neural recording using the
 `Sleep` GUI from Visbrain ( <http://visbrain.org> ) using the following steps:
 
--   load specific aspects of a dataset saved in multiple formats
--   (Optional) Compute or load a derived-EMG using the method from <https://github.com/buzsakilab/buzcode/blob/master/detectors/bz_EMGFromLFP.m>
+-   load specific aspects of one or multiple datasets saved in multiple formats
+-   (Optional) Load a derived-EMG using the method from <https://github.com/buzsakilab/buzcode/blob/master/detectors/bz_EMGFromLFP.m>
 -   launch the Sleep GUI, which can be used to generate a hypnogram
 -   postprocess the hypnogram
+
+To follow the modifications of Visbrain to facilitate scoring of animal data,
+check out this issue: ``https://github.com/EtienneCmb/visbrain/issues/35``
 
 ### Installation
 
@@ -26,20 +29,23 @@ This repository allows one to perform sleepscoring of neural recording using the
         workon sleepscoring
         ```
 
-1.  __Install `visbrain`__:
+1.  __Install `visbrain`__: 
 
-    1.  Download the package at <https://github.com/TomBugnon/visbrain>
-    1.  Install the downloaded package (make sure you're within the virtual environment)
+The changes to visbrain's Sleep module that allow sleepscoring of animal data
+(short scoring window) have not yet been released into a new version
+(04/19/2020), so you need to manually download and install the master branch of
+visbrain to use those features (commit more recent than b599038):
 
-```
-# From the `visbrain` directory you just downloaded
-pip install -e .
-```
+    1. Download or clone the master branch at https://github.com/EtienneCmb/visbrain/
+    2. From the `visbrain` directory you just downloaded: ``pip install .`` or
+    ``pip install -e .``
+
 2.  __Install `sleepscore`___
 
 ```
 # From the `sleepscore` directory you just downloaded
 pip install -e .
+# or `pip install .` for a non-editable install
 ```
 
 

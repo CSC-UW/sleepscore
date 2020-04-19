@@ -1,8 +1,1 @@
-numpy>=1.17.2
-visbrain>=0.4.5
-pyyaml
-docopt
-pandas
-tqdm
-pathlib
-tdt>=0.3.3
+-e .

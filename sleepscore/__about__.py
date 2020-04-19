@@ -3,8 +3,8 @@
 # __about__.py
 
 __title__ = 'sleepscore'
-__version__ = '0.0.0'
-__description__ = 'Python library for sleepscoring neural data'
+__version__ = '0.0.1'
+__description__ = 'Python library for sleepscoring neural data using Visbrain'
 __author__ = 'TomBugnon'
 __author_email__ = 'tombugnon@hotmail.com'
 __author_website__ = ''
