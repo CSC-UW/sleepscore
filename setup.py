@@ -19,8 +19,11 @@ install_requires = [
     'pandas',
     'tqdm',
     'pathlib',
-    'tdt>=0.3.3'
 ]
+
+extras_require = {
+    'tdt': ['tdt>=0.3.3']
+}
 
 setup(
     name=about['__title__'],
@@ -31,6 +34,7 @@ setup(
     url=about['__url__'],
     license=about['__license__'],
     install_requires=install_requires,
+    extras_require=extras_require,
     packages=['sleepscore'],
     zip_safe=False,
     classifiers=[

@@ -42,11 +42,16 @@ visbrain to use those features (commit more recent than b599038):
 
 2.  __Install `sleepscore`___
 
-```
-# From the `sleepscore` directory you just downloaded
-pip install -e .
-# or `pip install .` for a non-editable install
-```
+Download or clone this repository.
+
+From the `sleepscore` directory you just downloaded:
+
+`pip install -e .`
+
+If you want to load TDT data there is an extra requirement:
+`pip install -e ".[tdt]"`
+
+Drop the `-e` option for non-editable installation.
 
 
 ### Usage
