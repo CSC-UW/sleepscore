@@ -36,17 +36,14 @@ The changes to visbrain's Sleep module that allow sleepscoring of animal data
 (04/19/2020), so you need to manually download and install the master branch of
 visbrain to use those features (commit more recent than b599038):
 
-    1. Download or clone the master branch at https://github.com/EtienneCmb/visbrain/
-    2. From the `visbrain` directory you just downloaded: ``pip install .`` or
-    ``pip install -e .``
+  1. Download or clone the master branch at https://github.com/EtienneCmb/visbrain/
+  2. From the `visbrain` directory you just downloaded: ``pip install .`` or
+  ``pip install -e .``
 
 2.  __Install `sleepscore`___
 
-Download or clone this repository.
-
-From the `sleepscore` directory you just downloaded:
-
-`pip install -e .`
+Download or clone this repository. From the `sleepscore` directory you just
+downloaded: `pip install -e .`
 
 If you want to load TDT data there is an extra requirement:
 `pip install -e ".[tdt]"`
@@ -109,7 +106,7 @@ parameter is described in the `sleepscore.load_and_score` function:
     """
 ```
 
-1.  Run the package using either of the following:
+3.  Run the package using either of the following:
 
 
 - From the command line (make sure you're in your virtualenvironment)
