@@ -146,7 +146,7 @@ def load_and_score(datasets, downSample=100.0, tStart=None, tEnd=None,
             dataset_dict['chanLabelsMap']
         )
         # Prepend name of dataset
-        if dataset_dict['name'] is not None or len(dataset_dict['name'] >= 1):
+        if dataset_dict['name'] is not None and len(dataset_dict['name']) >= 1:
             labels = [dataset_dict['name'] + ',' + l for l in labels]
         print_used_channels(chanOrigLabels, labels)
 
