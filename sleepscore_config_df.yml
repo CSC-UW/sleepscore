@@ -7,7 +7,7 @@ datasets:
     datatype: ''  # 'SGLX' or 'TDT'
     chanList: [] # List of labels of loaded channels. See doc. eg: ["LF0;384", "LF1;385"] (SGLX) or [LFPs-1, LFPs-2, EEGs-1, EMGs-1] (TDT)
     chanLabelsMap: null  # Mapping for  channel relabelling (keys are values in chanList). eg: {"LF0;384": 'cortex'}
-    name: None  # Name of dataset. Prepended to channel labels (after relabelling) if specified and non-empty.
+    name: null  # Name of dataset. Prepended to channel labels (after relabelling) if specified and non-empty.
 
 # Downsampling frequency
 downSample: 100.0  # (Hz)
@@ -22,5 +22,4 @@ EMGdatapath: null
 # Arguments passed to the `Sleep` GUI
 kwargs_sleep: {
   downsample: null,  # Further downsample
-  preload: False,  # Preload dataset in memory? Useful for large datasets ?
 }
