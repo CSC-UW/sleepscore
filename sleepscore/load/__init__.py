@@ -7,7 +7,7 @@ import numpy as np
 import tdt
 
 from . import readSGLX as SGLX
-from . import utils
+from . import resample, utils
 
 DATA_FORMATS = ['SGLX', 'OpenEphys', 'TDT']
 
@@ -52,7 +52,8 @@ def print_loading_output(binPath, data, sf, channels):
     print(info % (binPath, sf, data.shape[1], len(channels)))
 
 
-def read_TDT(binPath, downSample=None, tStart=None, tEnd=None, chanList=None):
+def read_TDT(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
+             ds_method='interpolation'):
     """Load TDT data using the tdt python package.
 
     Args:
@@ -71,6 +72,9 @@ def read_TDT(binPath, downSample=None, tStart=None, tEnd=None, chanList=None):
             Where channels are 1-indexed, (IMPORTANT) not 0-indexed (for
             consistency with tdt methods)
                 eg: [LFPs-1, LFPs-2, EEGs-1, EEGs-94, EMGs-1...]
+        ds_method (str): Method for resampling. Passed to
+            ``resample.signal_resample``. 'poly' is more accurate,
+            'interpolation' is faster (default 'interpolation')
 
     Returns:
         data (np.ndarray): The raw data of shape (n_channels, n_points)
@@ -127,15 +131,35 @@ def read_TDT(binPath, downSample=None, tStart=None, tEnd=None, chanList=None):
 
         sRate = blk.streams[store].fs
         chandat = blk.streams[store].data  # (nSamples x 0)-array
+
         # Downsample the data
-        if downSample is None:
+        if downSample is None or downSample == sRate:
             downSample = sRate
-        assert downSample <= sRate
-        dsf, downSample = utils.get_dsf(downSample, sRate)
-        print(f"-> Downsample from {sRate}Hz to {downSample}Hz")
+            chan_dat_ds = chandat
+        else:
+            if downSample > sRate:
+                print(
+                    f"Warning: The resampling rate ({downSample}) is greater "
+                    f"than the original sampling rate ({sRate})"
+                )
+            print(f"-> Resampling from {sRate}Hz to {downSample}Hz using "
+                  f"'{ds_method}' method")
+            if not chan_dat_list:
+                # First channel: downsample to target
+                chan_dat_ds = resample.signal_resample(
+                    chandat, sampling_rate=sRate,
+                    desired_sampling_rate=downSample,
+                    method=ds_method,
+                )
+            else:
+                # next channels: downsample to match first channel's length
+                chan_dat_ds = resample.signal_resample(
+                    chandat, sampling_rate=sRate,
+                    desired_length=len(chan_dat_list[0]),
+                    method=ds_method,
+                )
 
         # Add data and timestamps
-        chan_dat_ds = chandat[::dsf]
         chan_ts_ds = [blk.streams[store].start_time + i/downSample
                       for i in range(len(chan_dat_ds))]
         chan_dat_list.append(chan_dat_ds)
@@ -177,7 +201,7 @@ def read_tdt_block(binPath, t1=None, t2=None, store=None, channel=None):
 
 
 def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
-              chanListType='labels'):
+              chanListType='labels', ds_method='interpolation'):
     """Load SpikeGLX data.
 
     Args:
@@ -198,6 +222,9 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
             interpreted as labels of channels (eg: "LF0;384")
             not all channels are saved on file during a recording. (default
             'labels')
+        ds_method (str): Method for resampling. Passed to
+            ``resample.signal_resample``. 'poly' is more accurate,
+            'interpolation' is faster (default 'interpolation')
 
     Returns:
         data (np.ndarray): The raw data of shape (n_channels, n_points)
@@ -214,9 +241,6 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     if tEnd is None:
         tEnd = float(meta['fileTimeSecs'])
     assert tStart <= tEnd
-    firstSamp = int(sRate*tStart)
-    lastSamp = int(sRate*tEnd)
-    print(f"Will load data from tStart={tStart}s to tEnd={tEnd}s")
 
     # Indices of loaded channels in recording, and original labels
     assert chanList is None or chanList == 'all' or len(chanList) > 0, (
@@ -227,21 +251,11 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     chanIdxList, chanLblList = get_loaded_chans_idx_labels(
         chanList, chanListType, savedLabels
     )
-    print(f"Will load N={len(chanIdxList)}/{len(savedLabels)} channels")
 
-    # Downsampling factor
-    if downSample is None:
-        downSample = sRate
-    assert downSample <= sRate
-    dsf, downSample = utils.get_dsf(downSample, sRate)
-    print(f"Will downsample from {sRate}Hz to {downSample}Hz")
-
-    print("Loading data of interest...")
-    # Load RAW data and slice out data of interest
-    DataRaw = SGLX.makeMemMapRaw(binPath, meta)[
-        chanIdxList,
-        firstSamp:lastSamp+1:dsf
-    ]
+    print(f"Loading N={len(chanIdxList)}/{len(savedLabels)} channels, "
+          f"from tStart={tStart}s to tEnd={tEnd}s...")
+    # Load RAW data
+    DataRaw = SGLX.makeMemMapRaw(binPath, meta)[chanIdxList, :]
 
     # Convert raw data to requested unit
     # This transforms the memmap into nparray
@@ -256,7 +270,49 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
         # apply gain correction and convert
         convData = factor * SGLX.GainCorrectNI(DataRaw, chanIdxList, meta)
 
-    return convData, downSample, chanLblList
+    # Downsample
+    if downSample is None or downSample == sRate:
+        downSample = sRate
+        data_ds = convData
+    else:
+        if downSample > sRate:
+            print(
+                f"Warning: The resampling rate ({downSample}) is greater "
+                f"than the original sampling rate ({sRate})"
+            )
+        print(f"-> Resampling from {sRate}Hz to {downSample}Hz using "
+              f"'{ds_method}' method")
+        ds_list = []
+        for i in range(convData.shape[0]):
+            if not ds_list:
+                # First channel: downsample to target
+                ds_list.append(
+                    resample.signal_resample(
+                        convData[i, :], sampling_rate=sRate,
+                        desired_sampling_rate=downSample,
+                        method=ds_method,
+                    )
+                )
+            else:
+                # next channels: downsample to match first channel's length
+                ds_list.append(
+                    resample.signal_resample(
+                        convData[i, :], sampling_rate=sRate,
+                        desired_length=len(ds_list[0]),
+                        method=ds_method,
+                    )
+                )
+        data_ds = np.vstack(ds_list)
+
+    # Plot
+    # import matplotlib.pyplot as plt
+    # raw_ts = np.linspace(tStart, tEnd, convData.shape[1])
+    # ds_ts = np.linspace(tStart, tEnd, data_ds.shape[1])
+    # plt.plot(raw_ts, convData[0,:], 'r+-')
+    # plt.plot(ds_ts, data_ds[0,:], 'b+-')
+    # plt.show()
+
+    return data_ds, downSample, chanLblList
 
 
 def get_loaded_chans_idx_labels(chanList, chanListType, savedLabels):

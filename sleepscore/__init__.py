@@ -47,8 +47,9 @@ def run(config_path):
     load_and_score(*mandatory, **optional)
 
 
-def load_and_score(datasets, downSample=100.0, tStart=None, tEnd=None,
-                   EMGdatapath=None, kwargs_sleep={}):
+def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
+                   ds_method='poly', EMGdatapath=None,
+                   kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
 
     Args:
@@ -83,6 +84,9 @@ def load_and_score(datasets, downSample=100.0, tStart=None, tEnd=None,
     Kwargs:
         downSample (int | float | None): Frequency in Hz at which all the data
             is subsampled. No subsampling if None (default 100.0)
+        ds_method (str): Method for resampling. Passed to
+            ``resample.signal_resample``. 'poly' is more accurate,
+            'interpolation' is faster (default 'interpolation')
         tStart (float | None): Time in seconds from start of recording of first
             loaded sample. Default 0.0
         tEnd (float | None): Time in seconds from start of recording of last
@@ -136,6 +140,7 @@ def load_and_score(datasets, downSample=100.0, tStart=None, tEnd=None,
             datatype=dataset_dict['datatype'],
             chanList=dataset_dict['chanList'],
             downSample=downSample,
+            ds_method=ds_method,
             tStart=tStart,
             tEnd=tEnd,
         )

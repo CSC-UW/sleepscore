@@ -11,6 +11,7 @@ datasets:
 
 # Downsampling frequency
 downSample: 100.0  # (Hz)
+ds_method: 'interpolation'  # Passed to resample.signal_resample. 'poly' is more accurate but slow, 'interpolation' is fast
 
 # Duration of the segment of data loaded
 tStart: 0.0  # 0 (s)
