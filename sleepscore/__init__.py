@@ -48,7 +48,7 @@ def run(config_path):
 
 
 def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
-                   ds_method='poly', EMGdatapath=None,
+                   ds_method='interpolation', EMGdatapath=None,
                    kwargs_sleep={}):
     """Load data and run visbrain's Sleep.
 
