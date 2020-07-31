@@ -29,16 +29,12 @@ from tkinter import filedialog
 
 def savedChanLabels(meta):
     """Return array of labels of saved channels."""
-    snsChanMap = parse_snsChanMap(meta)
-    # {orig_index : label}
-    labelmap = dict([(int(orig_i), label) for label, orig_i in snsChanMap])
-    return [labelmap[orig_i] for orig_i in OriginalChans(meta)]
+    return [item[0] for item in parse_snsChanMap(meta)]
 
 
 def parse_snsChanMap(meta):
-    """Parse channel labels / channel id info in meta['snsChanMap'].
+    """Parse channel labels / channel map in meta['snsChanMap'].
 
-    It is ridiculous that we have to do this ourselves.
     meta['snsChanMap'] is formatted as follows::
         (384,384,1)(AP0;0:0)(AP1;1:1)(...)...
 

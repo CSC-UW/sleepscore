@@ -337,11 +337,14 @@ def get_loaded_chans_idx_labels(chanList, chanListType, savedLabels):
             )
         # Interpret the list of channels as a list of labels
         chanIdxList, chanLblList = zip(
-            *enumerate([l for l in savedLabels if l in chanList])
+            *[
+                (idx, lbl) for (idx, lbl) in enumerate(savedLabels)
+                if lbl in chanList
+            ]
         )
     return list(chanIdxList), list(chanLblList)
 
-    
+
 LOADING_FUNCTIONS = {
     'sglx': read_SGLX,
     'tdt': read_TDT,
