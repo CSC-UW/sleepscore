@@ -22,5 +22,6 @@ EMGdatapath: null
 
 # Arguments passed to the `Sleep` GUI
 kwargs_sleep: {
-  downsample: null,  # Further downsample
+  # downsample: null,  # Further downsample
+  # annotations: 'path/to/myannotations.txt'
 }
