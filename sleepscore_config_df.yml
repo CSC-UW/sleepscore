@@ -17,7 +17,7 @@ ds_method: 'interpolation'  # Passed to resample.signal_resample. 'poly' is more
 tStart: 0.0  # 0 (s)
 tEnd: null  # (s) / end of recording if None
 
-# Derived EMG added to the data
+# Derived EMG added to the data. You must include the .npy extension when specifying the path.
 EMGdatapath: null
 
 # Arguments passed to the `Sleep` GUI
