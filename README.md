@@ -4,7 +4,7 @@ This repository allows one to perform sleepscoring of neural recording using the
 `Sleep` GUI from Visbrain ( <http://visbrain.org> ) using the following steps:
 
 -   load specific aspects of one or multiple datasets saved in multiple formats
--   (Optional) Load a derived-EMG using the method from <https://github.com/buzsakilab/buzcode/blob/master/detectors/bz_EMGFromLFP.m>
+-   (Optional) Load a [derived-EMG](https://github.com/CSC-UW/EMGfromLFP). 
 -   launch the Sleep GUI, which can be used to generate a hypnogram
 -   postprocess the hypnogram
 
