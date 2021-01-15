@@ -118,7 +118,7 @@ parameter is described in the `sleepscore.load_and_score` function:
 ```python
 import sleepscore
 
-sleepscore.run(<path_to_config_file>)
+sleepscore.run({config_dict}) # See function docstring
 ```
 
 Alternatively, `python run.py` will run the default config file.
