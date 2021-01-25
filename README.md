@@ -4,7 +4,7 @@ This repository allows one to perform sleepscoring of neural recording using the
 `Sleep` GUI from Visbrain ( <http://visbrain.org> ) using the following steps:
 
 -   load specific aspects of one or multiple datasets saved in multiple formats
--   (Optional) Load a [derived-EMG](https://github.com/CSC-UW/EMGfromLFP). 
+-   (Optional) Load a [derived-EMG](https://github.com/CSC-UW/emg_from_lfp).
 -   launch the Sleep GUI, which can be used to generate a hypnogram
 -   postprocess the hypnogram
 
@@ -15,21 +15,21 @@ check out this issue: ``https://github.com/EtienneCmb/visbrain/issues/35``
 
 1.  __Create and activate a virtual environment__:
 
-    -   On windows: 
+    -   On windows:
 
         ```
         conda create -n sleepscoring python=3.7
         conda activate sleepscoring
         ```
 
-    -   On Mac/linux s(install `venv` (`pip install virtualenv`) and `virtualenvwrapper` (`pip install virtualenvwrapper`) first): 
+    -   On Mac/linux s(install `venv` (`pip install virtualenv`) and `virtualenvwrapper` (`pip install virtualenvwrapper`) first):
 
         ```
         mkvirtualenv --python `which python3` sleepscoring
         workon sleepscoring
         ```
 
-1.  __Install `visbrain`__: 
+1.  __Install `visbrain`__:
 
 The changes to visbrain's Sleep module that allow sleepscoring of animal data
 (short scoring window) have not yet been released into a new version
@@ -97,7 +97,7 @@ parameter is described in the `sleepscore.load_and_score` function:
         tEnd (float | None): Time in seconds from start of recording of last
             loaded sample. Duration of recording in None. (default None)
         EMGdatapath (str or None): Path to an EMG data file created using the
-            `EMGfromLFP` package (<https://github.com/csc-UW/EMGfromLFP>). If
+            `emg_from_lfp` package (<https://github.com/csc-UW/emg_from_lfp>). If
             possible, the EMG data will be loaded, the required time segment
             extracted, resampled to match the desired sampling rate, and
             appended to the data passed to `Sleep`
@@ -110,7 +110,7 @@ parameter is described in the `sleepscore.load_and_score` function:
 
 
 - From the command line (make sure you're in your virtualenvironment)
-  
+
 `python -m sleepscore <path_to_config_file>`
 
 - From python:

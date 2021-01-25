@@ -4,7 +4,7 @@ import warnings
 
 import numpy as np
 
-import EMGfromLFP
+import emg_from_lfp
 import yaml
 from visbrain.gui import Sleep
 
@@ -20,7 +20,7 @@ def run(config_path):
     for a description of expected parameters.
     """
 
-    with open(config_path, 'r') as f:
+    with open(config_path, "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
     print(f"Sleepscore config: \n Path={config_path}, \n Config={config}, \n")
@@ -30,11 +30,16 @@ def run(config_path):
     # set default values
     mandatory_keys = get_args(load_and_score)
     optional_keys = get_kwargs(load_and_score)
-    config = validate(config, mandatory=mandatory_keys, optional=optional_keys,
-                      prefix='Validating config dictionary: ')
+    config = validate(
+        config,
+        mandatory=mandatory_keys,
+        optional=optional_keys,
+        prefix="Validating config dictionary: ",
+    )
     # Check USER didn't write "None" instead of yaml's "null"
-    none_keys = [k for k, v in config.items()
-                 if isinstance(v, str) and v.lower() == 'none']
+    none_keys = [
+        k for k, v in config.items() if isinstance(v, str) and v.lower() == "none"
+    ]
     if none_keys:
         raise ValueError(
             f"Python's 'None' value should be written 'null' in yaml. Please"
@@ -47,9 +52,15 @@ def run(config_path):
     load_and_score(*mandatory, **optional)
 
 
-def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
-                   ds_method='interpolation', EMGdatapath=None,
-                   kwargs_sleep={}):
+def load_and_score(
+    datasets,
+    tStart=None,
+    tEnd=None,
+    downSample=100.0,
+    ds_method="interpolation",
+    EMGdatapath=None,
+    kwargs_sleep={},
+):
     """Load data and run visbrain's Sleep.
 
     Args:
@@ -92,7 +103,7 @@ def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
         tEnd (float | None): Time in seconds from start of recording of last
             loaded sample. Duration of recording in None. (default None)
         EMGdatapath (str or None): Path to an EMG data file created using the
-            `EMGfromLFP` package (<https://github.com/csc-UW/EMGfromLFP>). If
+            `emg_from_lfp` package (<https://github.com/csc-UW/emg_from_lfp>). If
             possible, the EMG data will be loaded, the required time segment
             extracted, resampled to match the desired sampling rate, and
             appended to the data passed to `Sleep`
@@ -100,22 +111,22 @@ def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
             init. (default {})
     """
 
-    DERIVED_EMG_CHANLABEL = 'derivedEMG'
+    DERIVED_EMG_CHANLABEL = "derivedEMG"
 
     # Mandatory and optional keys of each of the dictionaries in `datasets`
-    DATASET_DICT_MANDATORY = ['binPath']
+    DATASET_DICT_MANDATORY = ["binPath"]
     DATASET_DICT_OPTIONAL = {
-        'datatype': 'SGLX',
-        'chanList': None,
-        'chanLabelsMap': None,
-        'name': None
+        "datatype": "SGLX",
+        "chanList": None,
+        "chanLabelsMap": None,
+        "name": None,
     }
 
     ############
     # Load data from multiple datasets
 
     if not datasets:
-        raise ValueError(f'`datasets` config entry should be a non-empty list.')
+        raise ValueError(f"`datasets` config entry should be a non-empty list.")
 
     print(f"\nLoading data from N={len(datasets)} datasets:\n")
 
@@ -124,21 +135,24 @@ def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
     chanLabels = []
     for i, dataset_dict in enumerate(datasets):
 
-        print(f"\nLoading dataset #{i+1}/{len(datasets)} from"
-              f" {dataset_dict['binPath']}")
+        print(
+            f"\nLoading dataset #{i+1}/{len(datasets)} from"
+            f" {dataset_dict['binPath']}"
+        )
 
         # Validate and set default values
         dataset_dict = validate(
-            dataset_dict, mandatory=DATASET_DICT_MANDATORY,
+            dataset_dict,
+            mandatory=DATASET_DICT_MANDATORY,
             optional=DATASET_DICT_OPTIONAL,
-            prefix='Validating `datasets` list item: '
+            prefix="Validating `datasets` list item: ",
         )
 
         # Preload and downsample specific parts of the data
         data, sf, chanOrigLabels = loader_switch(
-            dataset_dict['binPath'],
-            datatype=dataset_dict['datatype'],
-            chanList=dataset_dict['chanList'],
+            dataset_dict["binPath"],
+            datatype=dataset_dict["datatype"],
+            chanList=dataset_dict["chanList"],
             downSample=downSample,
             ds_method=ds_method,
             tStart=tStart,
@@ -146,13 +160,10 @@ def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
         )
 
         # Relabel channels and verbose which channels are used
-        labels = relabel_channels(
-            chanOrigLabels,
-            dataset_dict['chanLabelsMap']
-        )
+        labels = relabel_channels(chanOrigLabels, dataset_dict["chanLabelsMap"])
         # Prepend name of dataset
-        if dataset_dict['name'] is not None and len(dataset_dict['name']) >= 1:
-            labels = [dataset_dict['name'] + ',' + l for l in labels]
+        if dataset_dict["name"] is not None and len(dataset_dict["name"]) >= 1:
+            labels = [dataset_dict["name"] + "," + l for l in labels]
         print_used_channels(chanOrigLabels, labels)
 
         all_data_list.append(data)
@@ -172,7 +183,7 @@ def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
     if EMGdatapath:
         print("\nLoading the EMG")
         tEnd = data.shape[1] / sf  # Will fail if EMG is shorter
-        EMG_data, _ = EMGfromLFP.load_EMG(
+        EMG_data, _ = emg_from_lfp.load_emg(
             EMGdatapath,
             tStart=tStart,
             tEnd=tEnd,
@@ -189,12 +200,7 @@ def load_and_score(datasets, tStart=None, tEnd=None, downSample=100.0,
     # Call Sleep with loaded data
 
     print("\nCalling Sleep")
-    Sleep(
-        data=data,
-        channels=chanLabels,
-        sf=sf,
-        **kwargs_sleep
-    ).show()
+    Sleep(data=data, channels=chanLabels, sf=sf, **kwargs_sleep).show()
 
 
 def relabel_channels(chanLabels, chanLabelsMap):
@@ -203,30 +209,26 @@ def relabel_channels(chanLabels, chanLabelsMap):
         chanLabelsMap = {}
     missinglabels = set(chanLabelsMap.keys()) - set(chanLabels)
     if missinglabels:
-        warnings.warn(
-            "The following channels could not be relabelled: {missinglabels}"
-        )
+        warnings.warn("The following channels could not be relabelled: {missinglabels}")
     relabelled_chans = [
         str(chanLabelsMap[label]) if label in chanLabelsMap else label
         for label in chanLabels
     ]
     # TODO: Fix Sleep's chanlabel "cleaning"
-    return [c.replace('-', ',') for c in relabelled_chans]  # Sleep misreads '-'
+    return [c.replace("-", ",") for c in relabelled_chans]  # Sleep misreads '-'
 
 
 def print_used_channels(chanOrigLabels, chanLabels):
     """Print which channels are used for sleepscoring."""
-    print(f"Used channels:", end=' ')
-    print(f"(<original label>:<displayed label> ):", end=' ')
-    print(' - '.join(
-        '{}:{}'.format(*tup)
-        for tup in zip(chanOrigLabels, chanLabels)
-    ))
+    print(f"Used channels:", end=" ")
+    print(f"(<original label>:<displayed label> ):", end=" ")
+    print(" - ".join("{}:{}".format(*tup) for tup in zip(chanOrigLabels, chanLabels)))
 
 
 def get_kwargs(func):
     """Return ``{param: default}`` dict of kwargs for function ``func``"""
     import inspect
+
     signature = inspect.signature(func)
     return {
         k: v.default
@@ -238,6 +240,7 @@ def get_kwargs(func):
 def get_args(func):
     """Return list of args for function ``func``."""
     import inspect
+
     signature = inspect.signature(func)
     return [
         k
