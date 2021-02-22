@@ -24,4 +24,5 @@ EMGdatapath: null
 kwargs_sleep: {
   # downsample: null,  # Further downsample
   # annotations: 'path/to/myannotations.txt'
+  # states_config_file: 'path/to/states_cfg.yml'  # Specify custom vigilance states here. Example : `https://github.com/TomBugnon/visbrain/blob/develop/examples/gui_sleep/example_states_cfg.yml`
 }

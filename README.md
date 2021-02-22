@@ -31,12 +31,16 @@ check out this issue: ``https://github.com/EtienneCmb/visbrain/issues/35``
 
 1.  __Install `visbrain`__:
 
-The changes to visbrain's Sleep module that allow sleepscoring of animal data
-(short scoring window) have not yet been released into a new version
-(04/19/2020), so you need to manually download and install the master branch of
-visbrain to use those features (commit more recent than b599038):
+<!-- The changes to visbrain's Sleep module that allow sleepscoring of animal data -->
+<!-- (short scoring window) have not yet been released into a new version -->
+<!-- (04/19/2020), so you need to manually download and install the master branch of -->
+<!-- visbrain to use those features (commit more recent than b599038): -->
 
-  1. Download or clone the master branch at https://github.com/EtienneCmb/visbrain/
+<!--   1. Download or clone the master branch at https://github.com/EtienneCmb/visbrain/ -->
+<!--   2. From the `visbrain` directory you just downloaded: ``pip install .`` or -->
+<!--   ``pip install -e .`` -->
+
+  1. Download https://github.com/TomBugnon/visbrain/
   2. From the `visbrain` directory you just downloaded: ``pip install .`` or
   ``pip install -e .``
 
