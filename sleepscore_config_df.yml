@@ -25,4 +25,6 @@ kwargs_sleep: {
   # downsample: null,  # Further downsample
   # annotations: 'path/to/myannotations.txt'
   # states_config_file: 'path/to/states_cfg.yml'  # Specify custom vigilance states here. Example : `https://github.com/TomBugnon/visbrain/blob/develop/examples/gui_sleep/example_states_cfg.yml`
+  # video_file: 'path/to/video.avi'  # Sleep can display a video locked to the data.
+  # video_offset: null,  #  Offset between start of video and start of data
 }
