@@ -338,10 +338,12 @@ def get_loaded_chans_idx_labels(chanList, chanListType, savedLabels):
         # Interpret the list of channels as a list of labels
         chanIdxList, chanLblList = zip(
             *[
-                (idx, lbl) for (idx, lbl) in enumerate(savedLabels)
-                if lbl in chanList
+                (idx, lbl) for label in chanList
+                for (idx, lbl) in enumerate(savedLabels)
+                if lbl == label
             ]
-        )
+        )  # Keeps user-requested order
+        assert list(chanLblList) == list(chanList)
     return list(chanIdxList), list(chanLblList)
 
 
