@@ -51,6 +51,11 @@ downloaded: `pip install .`
 If you want to load TDT data there is an extra requirement:
 `pip install ".[tdt]"`
 
+3. __Install `emg_from_lfp`__:
+
+    1. Download https://github.com/CSC-UW/emg_from_lfp
+    2. From the `emg_from_lfp` directory you just downloaded: ``pip install .``
+
 Add an `-e` option after `pip install` for editable installation.
 
 
