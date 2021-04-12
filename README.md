@@ -41,7 +41,7 @@ check out this issue: ``https://github.com/EtienneCmb/visbrain/issues/35``
 <!--   ``pip install -e .`` -->
 
   1. Download https://github.com/TomBugnon/visbrain/
-  2. From the `visbrain` directory you just downloaded: ``pip install -U .``.
+  2. From the `visbrain` directory you just downloaded: ``pip install -U .``
 
 2.  __Install `sleepscore`___
 
