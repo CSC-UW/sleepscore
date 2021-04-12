@@ -130,3 +130,6 @@ sleepscore.run(<path_to_config_file>)
 ```
 
 Alternatively, `python run.py` will run the default config file.
+
+### Using video functionality in visbrain on Windows 10
+In order to use visbrain's video functionality on Windows 10, you will need DirectShow and other Windows Media Player libraries which may or may not have already been bundled with the OS, as well as the proper codecs that DirectShow can use to display your video format of choice. For example, in order to get mp4 video functionality working on Windows 10 Education N (N = does not ship with many Microsoft multimedia features), install the Media Feature Pack and Windows Media Player OS features by following the instructions for your OS [here](https://support.microsoft.com/en-us/topic/media-feature-pack-list-for-windows-n-editions-c1c6fffa-d052-8338-7a79-a4bb980a700a). Then, get the mp4 codecs [here](https://codecguide.com/download_kl.htm). 
