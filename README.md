@@ -46,12 +46,12 @@ check out this issue: ``https://github.com/EtienneCmb/visbrain/issues/35``
 2.  __Install `sleepscore`___
 
 Download or clone this repository. From the `sleepscore` directory you just
-downloaded: `pip install -e .`
+downloaded: `pip install .`
 
 If you want to load TDT data there is an extra requirement:
-`pip install -e ".[tdt]"`
+`pip install ".[tdt]"`
 
-Drop the `-e` option for non-editable installation.
+Add an `-e` option after `pip install` for editable installation.
 
 
 ### Usage
