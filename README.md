@@ -15,35 +15,32 @@ check out this issue: ``https://github.com/EtienneCmb/visbrain/issues/35``
 
 1.  __Create and activate a virtual environment__:
 
-    -   On windows:
+    1. On windows:
 
         ```
         conda create -n sleepscoring python=3.7
         conda activate sleepscoring
         ```
 
-    -   On Mac/linux s(install `venv` (`pip install virtualenv`) and `virtualenvwrapper` (`pip install virtualenvwrapper`) first):
+    2. On Mac/linux s(install `venv` (`pip install virtualenv`) and `virtualenvwrapper` (`pip install virtualenvwrapper`) first):
 
         ```
         mkvirtualenv --python `which python3` sleepscoring
         workon sleepscoring
         ```
 
-1.  __Install `visbrain`__:
+2.  __Install `visbrain`__:
+    
+    1. Download https://github.com/TomBugnon/visbrain/
+  
+        ```
+        git clone https://github.com/TomBugnon/visbrain/
+        git checkout develop
+        ```
+        
+    2. From the `visbrain` directory you just downloaded: ``pip install -U .``
 
-<!-- The changes to visbrain's Sleep module that allow sleepscoring of animal data -->
-<!-- (short scoring window) have not yet been released into a new version -->
-<!-- (04/19/2020), so you need to manually download and install the master branch of -->
-<!-- visbrain to use those features (commit more recent than b599038): -->
-
-<!--   1. Download or clone the master branch at https://github.com/EtienneCmb/visbrain/ -->
-<!--   2. From the `visbrain` directory you just downloaded: ``pip install .`` or -->
-<!--   ``pip install -e .`` -->
-
-  1. Download https://github.com/TomBugnon/visbrain/
-  2. From the `visbrain` directory you just downloaded: ``pip install -U .``
-
-2.  __Install `sleepscore`___
+3.  __Install `sleepscore`___
 
 Download or clone this repository. From the `sleepscore` directory you just
 downloaded: `pip install .`
@@ -51,7 +48,7 @@ downloaded: `pip install .`
 If you want to load TDT data there is an extra requirement:
 `pip install ".[tdt]"`
 
-3. __Install `emg_from_lfp`__:
+4. __Install `emg_from_lfp`__:
 
     1. Download https://github.com/CSC-UW/emg_from_lfp
     2. From the `emg_from_lfp` directory you just downloaded: ``pip install .``
