@@ -8,8 +8,7 @@ import emg_from_lfp
 import yaml
 from visbrain.gui import Sleep
 
-from .load import loader_switch
-from .validation import validate
+from . import load, validation
 
 
 def run(config_path):
@@ -30,7 +29,7 @@ def run(config_path):
     # set default values
     mandatory_keys = get_args(load_and_score)
     optional_keys = get_kwargs(load_and_score)
-    config = validate(
+    config = validation.validate(
         config,
         mandatory=mandatory_keys,
         optional=optional_keys,
@@ -141,7 +140,7 @@ def load_and_score(
         )
 
         # Validate and set default values
-        dataset_dict = validate(
+        dataset_dict = validation.validate(
             dataset_dict,
             mandatory=DATASET_DICT_MANDATORY,
             optional=DATASET_DICT_OPTIONAL,
@@ -149,7 +148,7 @@ def load_and_score(
         )
 
         # Preload and downsample specific parts of the data
-        data, sf, chanOrigLabels = loader_switch(
+        data, sf, chanOrigLabels = load.loader_switch(
             dataset_dict["binPath"],
             datatype=dataset_dict["datatype"],
             chanList=dataset_dict["chanList"],

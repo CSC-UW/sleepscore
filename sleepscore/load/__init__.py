@@ -6,8 +6,7 @@ import numpy as np
 
 import tdt
 
-from . import readSGLX as SGLX
-from . import resample, utils
+from . import readSGLX, resample, utils
 
 DATA_FORMATS = ['SGLX', 'OpenEphys', 'TDT']
 
@@ -232,8 +231,8 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
         channels (list(str)): List of channel names / original indices
     """
     print(f"Load SpikeGLX data at {binPath}")
-    meta = SGLX.readMeta(Path(binPath))
-    sRate = SGLX.SampRate(meta)
+    meta = readSGLX.readMeta(Path(binPath))
+    sRate = readSGLX.SampRate(meta)
 
     # Indices in recording of first and last loaded samples
     if tStart is None:
@@ -247,7 +246,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
         "The chanList parameter should be None, 'all' or a non-empty list."
         f"Currently chanList = {chanList}"
     )
-    savedLabels = SGLX.savedChanLabels(meta)
+    savedLabels = readSGLX.savedChanLabels(meta)
     chanIdxList, chanLblList = get_loaded_chans_idx_labels(
         chanList, chanListType, savedLabels
     )
@@ -255,7 +254,7 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     print(f"Loading N={len(chanIdxList)}/{len(savedLabels)} channels, "
           f"from tStart={tStart}s to tEnd={tEnd}s...")
     # Load RAW data
-    DataRaw = SGLX.makeMemMapRaw(binPath, meta)[chanIdxList, :]
+    DataRaw = readSGLX.makeMemMapRaw(binPath, meta)[chanIdxList, :]
 
     # Convert raw data to requested unit
     # This transforms the memmap into nparray
@@ -265,10 +264,10 @@ def read_SGLX(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
         factor = 1.e6
     if meta['typeThis'] == 'imec':
         # apply gain correction and convert
-        convData = factor * SGLX.GainCorrectIM(DataRaw, chanIdxList, meta)
+        convData = factor * readSGLX.GainCorrectIM(DataRaw, chanIdxList, meta)
     else:
         # apply gain correction and convert
-        convData = factor * SGLX.GainCorrectNI(DataRaw, chanIdxList, meta)
+        convData = factor * readSGLX.GainCorrectNI(DataRaw, chanIdxList, meta)
 
     # Downsample
     if downSample is None or downSample == sRate:
