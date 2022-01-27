@@ -169,10 +169,10 @@ def read_TDT(binPath, downSample=None, tStart=None, tEnd=None, chanList=None,
     assert all(
         [dat.shape == chan_dat_list[0].shape for dat in chan_dat_list]
     )
-    # Check data is aligned for all channels (same timestamps for each channel)
-    assert all(
-        [len(set(ts_list)) == 1 for ts_list in zip(*chan_ts_list)]
-    )
+    # Check data is aligned for all channels (~same timestamps for each channel)
+    MAX_DIFF = 0.001  # (s)
+    ts_diff = [max(ts_list) - min(ts_list) for ts_list in zip(*chan_ts_list)]
+    assert all([v <= MAX_DIFF for v in ts_diff])
 
     return np.stack(chan_dat_list), downSample, chanList
 
